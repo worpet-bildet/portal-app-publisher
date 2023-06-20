@@ -14,6 +14,9 @@
       ::  what should be in the state for app-pub (e.g. ships who payed and how much)
       [%blah ~]
       ::
+      ::  TODO treaty unpublish flow to make it work when you unpublish
+      ::  basically desk should be removed from our-apps
+      ::
       ::  ask people to make docket file which we read from portal-app-pub
       ::  price -> in %app item (how to get it there?)
       ::  recepient address -> on portal app pub

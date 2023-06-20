@@ -69,11 +69,6 @@
         (~(put by desks-for-sale) desk.act [eth-price.act *group])
       `this
       ::
-        [%get-tx-by-hash *]
-      =+  (hex-to-num:ethereum tx-hash.act)
-      :_  this
-      [%pass /get-tx %arvo %k %fard dap.bowl %get-tx-by-hash %noun !>([url.act -])]~
-      ::
         [%sign-app *]
       =/  dist-desk  (parse-dist-desk dist-desk.act)
       ?~  dist-desk  !!
@@ -109,19 +104,26 @@
     ::
       %portal-message
     =/  msg  !<(message:portal-message vase)
-    ?>  ?=([%payment-request *] msg)
-    =/  hex  `@ux`(mod eny.bowl (pow 4 16))
-    ::  crash if not for sale
-    =/  [=eth-price =group]  (~(got by desks-for-sale) desk.msg)
-    ?:  (~(has in group) src.bowl)
-      ~&  >>  "desk {<desk.msg>} already bought by {<src.bowl>}" 
-      `this
-    =.  processing-payments
-      (~(put by processing-payments) hex [src.bowl desk.msg eth-price receiving-address])
-    :_  this
-    :~  :*  %pass  /payment-ref  %agent  [src.bowl %portal-manager]  %poke  
-        %portal-message  !>([%payment-reference receiving-address hex eth-price])
-    ==  ==
+    ?+    msg    `this
+        [%payment-request *]
+      =/  hex  `@ux`(mod eny.bowl (pow 4 16))
+      ::  crash if not for sale
+      =/  [=eth-price =group]  (~(got by desks-for-sale) desk.msg)
+      ?:  (~(has in group) src.bowl)
+        ~&  >>  "desk {<desk.msg>} already bought by {<src.bowl>}" 
+        `this
+      =.  processing-payments
+        (~(put by processing-payments) hex [src.bowl desk.msg eth-price receiving-address])
+      :_  this
+      :~  :*  %pass  /payment-ref  %agent  [src.bowl %portal-manager]  %poke  
+          %portal-message  !>([%payment-reference receiving-address hex eth-price])
+      ==  ==
+      ::
+        [%payment-tx-hash *]
+      ~&  >  "received hash"
+      :_  this
+      [%pass /get-tx %arvo %k %fard dap.bowl %get-tx-by-hash %noun !>(['https://mainnet.infura.io/v3/9b96ee8ae39f44f7b6039b5bb73d22a2' tx-hash.msg])]~
+    ==
     ::
       %sss-to-pub
     =/  msg  !<(into:du-portal-devs (fled vase))
@@ -175,16 +177,35 @@
   ^-  (quip card:agent:gall _this)
   ?>  ?=([%get-tx ~] wire)
   ?>  ?=([%khan %arow *] sign)
-  ::  TODO probably remove from processing payments once it's done
-  ?:  ?=(%.y -.p.sign)
-    =/  result  !<(?(~ transaction-result) q.p.p.sign)
-    ?~  result
-      ~&  >>  "transaction wasn't made over last 24 hr"
-      `this
-    ~&  `@ud`(need value.result)
+  ?.  ?=(%.y -.p.sign)
+    ~&  >>  "fetching data failed"
     `this
-  ~&  >>  "fetching data failed"
+  =/  result  !<(?(~ transaction-result) q.p.p.sign)
+  ?~  result
+    ~&  >>  "transaction wasn't made over last 24 hr"
+    `this
+  ?.  =((need to.result) receiving-address)  ::  is it possible to have to.result empty?
+    ~&  >  "incorrect receiving address"
+    `this
+  ?~  processing-data=(~(get by processing-payments) (hex-to-num:ethereum input.result))
+    ~&  >  "payment with this hex never made"
+    `this
+  ?.  (gte `@ud`(need value.result) eth-price.u.processing-data) :: is it possible to have value.result empty?
+    ~&  >  "payment too smol"
+    ::  should I remove hex from processing payments here?
+    `this
+  ~&  >  "success!"
+    ::  TODO remove from processing payments once it's done
   `this
+  :: :_  this
+  :: :~  :*  %pass  /payment-confirm  %agent  [src.bowl %portal-manager]  %poke  
+  ::     %portal-message  !>([%payment-confirmed tx-hash ()])
+  :: ==  ==
+  :: how often should processing payments be purged? ince a week?
+
+  ::  give perm to clay
+  ::  send poke back that they can install (maybe they can start installing earlier?)
+  ::  regardless, send poke back that tx was confirmed
 ::
 ++  on-fail   on-fail:default
 --
