@@ -1,6 +1,6 @@
 |%
 +$  action  
-  $%  [%sign-app dev=ship dist-desk=@t]
+  $%  [%sign-app dev=ship dist-desk=@t]  ::  todo, should set price
       [%agent-init ~]
       [%set-receiving-address receiving-address=@ux]
       [%get-tx-by-hash url=@ta tx-hash=@t]

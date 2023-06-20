@@ -1,4 +1,4 @@
-/-  *action, treaty, portal-devs, portal-message
+/-  *action, treaty, portal-devs, portal-message, *app-pub
 /+  default-agent, dbug, *sig, *sss, *portal-app-pub
 |%
 +$  versioned-state
@@ -7,10 +7,9 @@
   ==
 +$  state-1
   $:  %1
-      :: if you hit entropy collision, you will be rewarded 1000 portal score
-      processing-payments=(map @ux [buyer=ship =desk eth-price=@ud receiving-address=@ux])
-      desks-for-sale=(map desk [eth-price=@ud group=(set ship)])
-      receiving-address=@ux
+      =processing-payments
+      =desks-for-sale
+      =receiving-address
       our-apps=(set [ship desk])
       treaties=(map [ship desk] treaty:treaty)
       pub-portal-devs=_(mk-pubs portal-devs ,[%portal-devs ~])
@@ -43,7 +42,7 @@
   =/  old  !<(versioned-state vase)
   =.  state
     ?-  old
-      [%0 *]  [%1 *(map @ux [ship desk @ud @ux]) *(map desk [@ud (set ship)]) *@ux +.old]
+      [%0 *]  [%1 *^processing-payments *^desks-for-sale *^receiving-address +.old]
       [%1 *]  old
     ==
   on-init
@@ -67,7 +66,7 @@
       ?<  (~(has in our-apps) [our.bowl desk.act])
       ::  TODO confirm desk exists w/ clay
       =.  desks-for-sale
-        (~(put by desks-for-sale) desk.act [eth-price.act *(set ship)])
+        (~(put by desks-for-sale) desk.act [eth-price.act *group])
       `this
       ::
         [%get-tx-by-hash *]
@@ -113,7 +112,7 @@
     ?>  ?=([%payment-request *] msg)
     =/  hex  `@ux`(mod eny.bowl (pow 4 16))
     ::  crash if not for sale
-    =/  [eth-price=@ud group=(set ship)]  (~(got by desks-for-sale) desk.msg)
+    =/  [=eth-price =group]  (~(got by desks-for-sale) desk.msg)
     ?:  (~(has in group) src.bowl)
       ~&  >>  "desk {<desk.msg>} already bought by {<src.bowl>}" 
       `this
@@ -131,7 +130,15 @@
   ==
 ++  on-watch  on-watch:default
 ++  on-leave  on-leave:default
-++  on-peek   on-peek:default
+++  on-peek
+  |=  =path
+  ^-  (unit (unit cage))
+  ?+    path    (on-peek:default path)
+    [%x %processing-payments ~]  ``app-pub-result+!>([%processing-payments processing-payments])
+    [%x %desks-for-sale ~]       ``app-pub-result+!>([%desks-for-sale desks-for-sale])
+    [%x %receiving-address ~]    ``app-pub-result+!>([%receiving-address receiving-address])
+  ==
+::
 ++  on-agent
   |=  [=wire =sign:agent:gall]
   ^-  (quip card _this)

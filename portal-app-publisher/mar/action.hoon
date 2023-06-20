@@ -7,6 +7,7 @@
 ++  grab
   |%
   ++  noun  action
+  ++  json  dejs-action:dejs:app-pub-js  
   --
 ++  grad  %noun
 --
