@@ -4,6 +4,7 @@
       [%agent-init ~]
       [%get-tx-by-hash url=@ta tx-hash=@t]
       [%publish =desk eth-price=@ud receiving-address=@ux]  
+      [%set-rpc-endpoint endpoint=@ta]
       ::  [%unpublish =desk] ?
       ::::
       ::  what should be in the state for app-pub (e.g. ships who payed and how much)?

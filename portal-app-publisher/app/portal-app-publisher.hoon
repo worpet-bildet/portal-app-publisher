@@ -10,6 +10,7 @@
       =processing-payments
       =processed-payments
       =desks-for-sale
+      rpc-endpoint=@ta
       our-apps=(set [ship desk])
       treaties=(map [ship desk] treaty:treaty)
       pub-portal-devs=_(mk-pubs portal-devs ,[%portal-devs ~])
@@ -42,7 +43,7 @@
   =/  old  !<(versioned-state vase)
   =.  state
     ?-  old
-      [%0 *]  [%1 *^processing-payments *^processed-payments *^desks-for-sale +.old]
+      [%0 *]  [%1 *^processing-payments *^processed-payments *^desks-for-sale '' +.old]
       [%1 *]  old
     ==
   on-init
@@ -54,6 +55,10 @@
     ?>  =(our.bowl src.bowl)
     =/  act  !<(action vase)
     ?+    act    !!
+        [%set-rpc-endpoint *]
+      =.  rpc-endpoint  endpoint.act
+      `this
+      ::
         [%publish *]
       ::  TODO test flow
       ?.  (~(has in .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl))) desk.act)
