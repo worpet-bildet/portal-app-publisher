@@ -56,7 +56,7 @@
     ?+    act    !!
         [%publish *]
       ::  TODO test flow
-      ?.  (~(has in .^((set desk) %cd %)) desk.act)
+      ?.  (~(has in .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl))) desk.act)
         ~&  "desk doesn't exist"
         `this
       ?.  (~(has in our-apps) [our.bowl desk.act])
