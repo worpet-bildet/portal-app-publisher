@@ -39,4 +39,9 @@
   ?~  ship-unit  ~
   %-  some  :-  (need ship-unit)
   `@tas`(crip (slag +(u.loc) dist-desk))
+::
+++  group-from-desk
+  |=  =desk
+  ^-  @ta
+  (crip (weld "portal-sold-" (trip desk)))
 --

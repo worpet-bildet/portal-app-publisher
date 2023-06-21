@@ -2,16 +2,11 @@
 +$  action  
   $%  [%sign-app dev=ship dist-desk=@t]  ::  todo, should set price
       [%agent-init ~]
-      [%set-receiving-address receiving-address=@ux]
       [%get-tx-by-hash url=@ta tx-hash=@t]
-      ::  DON'T publish with treaty because that automatically makes the desk public
-      [%publish =desk eth-price=@ud]  
+      [%publish =desk eth-price=@ud receiving-address=@ux]  
       ::  [%unpublish =desk] ?
-      ::  .^([r=dict:clay w=dict:clay] %cp /=app1=)
-      :: |pass c+[%perm %app1 *path [%r `[%white (sy ~[[%.n 'portal-sell-app1']])]]]
-      ::  -send-task-take-gift [%cred 'portal-sell-app1' (sy ~[~zod])]
       ::::
-      ::  what should be in the state for app-pub (e.g. ships who payed and how much)
+      ::  what should be in the state for app-pub (e.g. ships who payed and how much)?
       [%blah ~]
       ::
       ::  TODO treaty unpublish flow to make it work when you unpublish

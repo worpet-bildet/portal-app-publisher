@@ -19,8 +19,7 @@
     %.  jon
     %-  of
     :~  [%sign-app (ot:dejs ~[dev+dejs-ship dits-desk+so])]
-        [%set-receiving-address (ot:dejs ~[receiving-address+dejs-hex])]
-        [%publish (ot:dejs ~[desk+so eth-price+ni])]
+        [%publish (ot:dejs ~[desk+so eth-price+ni receiving-address+dejs-hex])]
     ==
   ++  dejs-hex
     |=  jon=json

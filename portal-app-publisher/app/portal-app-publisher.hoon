@@ -8,8 +8,8 @@
 +$  state-1
   $:  %1
       =processing-payments
+      =processed-payments
       =desks-for-sale
-      =receiving-address
       our-apps=(set [ship desk])
       treaties=(map [ship desk] treaty:treaty)
       pub-portal-devs=_(mk-pubs portal-devs ,[%portal-devs ~])
@@ -42,7 +42,7 @@
   =/  old  !<(versioned-state vase)
   =.  state
     ?-  old
-      [%0 *]  [%1 *^processing-payments *^desks-for-sale *^receiving-address +.old]
+      [%0 *]  [%1 *^processing-payments *^processed-payments *^desks-for-sale +.old]
       [%1 *]  old
     ==
   on-init
@@ -54,20 +54,29 @@
     ?>  =(our.bowl src.bowl)
     =/  act  !<(action vase)
     ?+    act    !!
-        [%set-receiving-address *]
-      =.  receiving-address  receiving-address.act
-      `this
-      ::
         [%publish *]
+      ::  TODO test flow
+      ?.  (~(has in .^((set desk) %cd %)) desk.act)
+        ~&  "desk doesn't exist"
+        `this
+      ?.  (~(has in our-apps) [our.bowl desk.act])
+        ~&  "desk treaty published, first unpublish it from treaty to sell it"
+        `this
       ?:  (~(has by desks-for-sale) desk.act)
         ~&  "desk {<desk>} already published"
         `this
-      ::  desk mustn't be treaty published
-      ?<  (~(has in our-apps) [our.bowl desk.act])
-      ::  TODO confirm desk exists w/ clay
-      =.  desks-for-sale
-        (~(put by desks-for-sale) desk.act [eth-price.act *group])
-      `this
+      =/  group-name  (group-from-desk desk.act)
+      =.  desks-for-sale  (~(put by desks-for-sale) [desk eth-price receiving-address]:act)
+      =/  perms  .^([r=dict:clay w=dict:clay] %cp /=[desk.act]=)
+      :_  this
+                    ::(map @ta crew) 
+      ?^  (~(get by q.who.rul.r.perms) group-name)
+        ~
+      :~  :*  %pass  /create-group  %arvo  %c
+              [%perm desk.act *path [%r `[%white (sy ~[[%.n group-name]])]]]
+          ==
+          [%pass /set-group %arvo %c %cred group-name (sy ~[our.bowl])]
+      ==
       ::
         [%sign-app *]
       =/  dist-desk  (parse-dist-desk dist-desk.act)
@@ -108,15 +117,19 @@
         [%payment-request *]
       =/  hex  `@ux`(mod eny.bowl (pow 4 16))
       ::  crash if not for sale
-      =/  [=eth-price =group]  (~(got by desks-for-sale) desk.msg)
-      ?:  (~(has in group) src.bowl)
+      =/  [=eth-price =receiving-address]  (~(got by desks-for-sale) desk.msg)
+      =/  perms  .^([r=dict:clay w=dict:clay] %cp /=[desk.msg]=)
+      ?~  crew=(~(get by q.who.rul.r.perms) (group-from-desk desk.msg))
+        ~&  >>  "desk not for sale"
+        `this
+      ?:  (~(has in u.crew) src.bowl)
         ~&  >>  "desk {<desk.msg>} already bought by {<src.bowl>}" 
         `this
       =.  processing-payments
         (~(put by processing-payments) hex [src.bowl desk.msg eth-price receiving-address])
       :_  this
       :~  :*  %pass  /payment-ref  %agent  [src.bowl %portal-manager]  %poke  
-          %portal-message  !>([%payment-reference receiving-address hex eth-price])
+          %portal-message  !>([%payment-reference hex eth-price receiving-address])
       ==  ==
       ::
         [%payment-tx-hash *]
@@ -137,8 +150,8 @@
   ^-  (unit (unit cage))
   ?+    path    (on-peek:default path)
     [%x %processing-payments ~]  ``app-pub-result+!>([%processing-payments processing-payments])
+    [%x %processed-payments ~]   ``app-pub-result+!>([%processed-payments processed-payments])
     [%x %desks-for-sale ~]       ``app-pub-result+!>([%desks-for-sale desks-for-sale])
-    [%x %receiving-address ~]    ``app-pub-result+!>([%receiving-address receiving-address])
   ==
 ::
 ++  on-agent
@@ -180,28 +193,40 @@
   ?.  ?=(%.y -.p.sign)
     ~&  >>  "fetching data failed"
     `this
-  =/  result  !<(?(~ transaction-result) q.p.p.sign)
+  ::  TODO test flow
+  ~&  >>  "didnt test new devasing"
+  =+  !<([tx-hash=@ux result=?(~ transaction-result)] q.p.p.sign)
   ?~  result
     ~&  >>  "transaction wasn't made over last 24 hr"
     `this
-  ?.  =((need to.result) receiving-address)  ::  is it possible to have to.result empty?
-    ~&  >  "incorrect receiving address"
+  =/  hex  (hex-to-num:ethereum input.result)
+  ?~  processing-data=(~(get by processing-payments) hex)
+    ~&  >>  "payment with this hex never made"
     `this
-  ?~  processing-data=(~(get by processing-payments) (hex-to-num:ethereum input.result))
-    ~&  >  "payment with this hex never made"
+  ?.  =((need to.result) receiving-address.u.processing-data)  ::  is it possible to have to.result empty?
+    ~&  >>  "incorrect receiving address"
     `this
   ?.  (gte `@ud`(need value.result) eth-price.u.processing-data) :: is it possible to have value.result empty?
-    ~&  >  "payment too smol"
+    ~&  >>  "payment too smol"
     ::  should I remove hex from processing payments here?
     `this
   ~&  >  "success!"
-    ::  TODO remove from processing payments once it's done
-  `this
-  :: :_  this
-  :: :~  :*  %pass  /payment-confirm  %agent  [src.bowl %portal-manager]  %poke  
-  ::     %portal-message  !>([%payment-confirmed tx-hash ()])
-  :: ==  ==
-  :: how often should processing payments be purged? ince a week?
+  =.  processing-payments  (~(del by processing-payments) hex)
+  =.  processed-payments  %+  snoc  processed-payments
+    [buyer.u.processing-data desk.u.processing-data tx-hash now.bowl]
+  =/  perms  .^([r=dict:clay w=dict:clay] %cp /=[desk.u.processing-data]=)
+  =/  group-name  (group-from-desk desk.u.processing-data)
+  :_  this
+                     ::(map @ta crew) 
+  ?~  crew=(~(get by q.who.rul.r.perms) group-name)
+    ~&  >>>  "this group should exist"
+    ~
+  ::  giving read perms to buyer
+  :~  [%pass /set-group %arvo %c %cred group-name (~(put in u.crew) buyer.u.processing-data)] 
+      :*  %pass  /payment-confirm  %agent  [buyer.u.processing-data %portal-manager]  %poke  
+          %portal-message  !>([%payment-confirmed tx-hash desk.u.processing-data])
+  ==  ==
+  :: how often should processing payments be purged? once a week?
 
   ::  give perm to clay
   ::  send poke back that they can install (maybe they can start installing earlier?)
