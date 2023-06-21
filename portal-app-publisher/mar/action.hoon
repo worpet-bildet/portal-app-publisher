@@ -1,4 +1,5 @@
 /-  *action
+/+  app-pub-js
 |_  act=action
 ++  grow
   |%

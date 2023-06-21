@@ -8,6 +8,7 @@
     |=  ship=@p
     ^-  json
     s+`@t`(scot %p ship)
+  ::++  enjs
   --
 ::
 ++  dejs
