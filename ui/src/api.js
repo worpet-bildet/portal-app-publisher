@@ -30,6 +30,13 @@ export const api = {
     scry({ app: 'portal-app-publisher', path: '/processed-payments' }),
   getDesksForSale: () =>
     scry({ app: 'portal-app-publisher', path: '/desks-for-sale' }),
+  getRpcEndpoint: () =>
+    scry({ app: 'portal-app-publisher', path: '/rpc-endpoint' }),
+  getTreatyPublishedApps: () =>
+    scry({ app: 'portal-app-publisher', path: '/our-apps' }),
+  getPortalDevs: () =>  // devs who we give the privilege to share our app on %portal
+    scry({ app: 'portal-app-publisher', path: '/portal-devs' }),
+
   publishApp: () =>
     poke({
       app: 'portal-app-publisher',
@@ -39,6 +46,16 @@ export const api = {
           desk: 'sell-me',
           'receiving-address': '0x1CeDC0f3Af8f9841B0a1F5c1a4DDc6e1a1629074',
           'eth-price': 1000,
+        },
+      },
+    }),
+  unpublishApp: () =>
+    poke({
+      app: 'portal-app-publisher',
+      mark: 'action',
+      json: {
+        unpublish: {
+          desk: 'sell-me',
         },
       },
     }),

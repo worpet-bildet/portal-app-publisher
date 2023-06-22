@@ -14,6 +14,12 @@
       %+  frond  'processed-payments'  (enjs-processed-payments +.result)
         %desks-for-sale
       %+  frond  'desks-for-sale'  (enjs-desks-for-sale +.result)
+        %rpc-endpoint
+      %+  frond  'rpc-endpoint'  s++.result
+        %our-apps
+      %+  frond  'our-apps'  (enjs-our-apps +.result)
+        %portal-devs
+      %+  frond  'portal-devs'  (enjs-portal-devs +.result)
     ==
   ::
   ++  enjs-processing-payments
@@ -60,6 +66,30 @@
         ['receiving-address' (enjs-hex receiving-address)]
     ==
   ::
+  ++  enjs-our-apps
+    |=  our-apps=(set [ship=@p desk=@tas])
+    ^-  json
+    :-  %a
+    =+  ~(tap in our-apps)
+    %+  turn  -
+    |=  [ship=@p desk=@tas]
+    ^-  json
+    %-  pairs
+    :~  ['ship' (enjs-ship ship)]
+        ['desk' s+desk]
+    ==
+  ::
+  ++  enjs-portal-devs
+    |=  portal-devs=(map [ship=@p desk=@tas] @p)
+    ^-  json
+    :-  %o
+    =+  ~(tap by portal-devs)
+    %-  malt  %+  turn  -
+    |=  [k=[ship=@p desk=@tas] v=@p]
+    ^-  [@t json]
+    :-  (crip ;:(welp (scow %p ship.k) "/" (scow %tas desk.k)))
+    (enjs-ship v)
+  ::
   ++  enjs-hex
     |=  hex=@ux
     ^-  json
@@ -82,6 +112,7 @@
     %-  of
     :~  [%sign-app (ot:dejs ~[dev+dejs-ship dits-desk+so])]
         [%publish (ot:dejs ~[desk+so eth-price+ni receiving-address+dejs-hex])]
+        [%unpublish (ot:dejs ~[desk+so])]
         [%set-rpc-endpoint (ot:dejs ~[endpoint+so])]
     ==
   ++  dejs-hex

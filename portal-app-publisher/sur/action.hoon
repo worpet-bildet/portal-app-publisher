@@ -3,9 +3,9 @@
   $%  [%sign-app dev=ship dist-desk=@t]  ::  todo, should set price
       [%agent-init ~]
       [%publish =desk eth-price=@ud receiving-address=@ux]  
+      [%unpublish =desk]
       [%set-rpc-endpoint endpoint=@ta]
       [%test-payment-confirmed =ship =desk]
-      ::  [%unpublish =desk] ?
       ::::
       ::  what should be in the state for app-pub (e.g. ships who payed and how much)?
       [%blah ~]

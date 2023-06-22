@@ -15,5 +15,8 @@
   $%  [%processing-payments =processing-payments]
       [%processed-payments =processed-payments]
       [%desks-for-sale =desks-for-sale]
+      [%rpc-endpoint rpc-endpoint=@ta]
+      [%our-apps our-apps=(set [=ship =desk])]  :: treaty published apps
+      [%portal-devs portal-devs=(map [ship=@p desk=@tas] ship)]  :: desk to portal ship which owns it on portal
   ==
 --
