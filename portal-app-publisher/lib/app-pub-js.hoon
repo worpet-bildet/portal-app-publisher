@@ -82,7 +82,7 @@
     %-  of
     :~  [%sign-app (ot:dejs ~[dev+dejs-ship dits-desk+so])]
         [%publish (ot:dejs ~[desk+so eth-price+ni receiving-address+dejs-hex])]
-        [%set-rpc-endpoint endpoint+so]
+        [%set-rpc-endpoint (ot:dejs ~[endpoint+so])]
     ==
   ++  dejs-hex
     |=  jon=json

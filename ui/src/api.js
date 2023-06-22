@@ -42,6 +42,16 @@ export const api = {
         },
       },
     }),
+  setRpcEndpoint: () =>
+  poke({
+    app: 'portal-app-publisher',
+    mark: 'action',
+    json: {
+      "set-rpc-endpoint": {
+        endpoint: 'https://mainnet.infura.io/v3/9b96ee8ae39f44f7b6039b5bb73d22a2',
+      },
+    },
+  }),
 };
 
 export const usePortalSubscription = async (onEvent) => {

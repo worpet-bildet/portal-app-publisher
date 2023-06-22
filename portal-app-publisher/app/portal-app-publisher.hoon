@@ -145,7 +145,7 @@
         [%payment-tx-hash *]
       ~&  >  "received hash"
       :_  this
-      [%pass /get-tx %arvo %k %fard dap.bowl %get-tx-by-hash %noun !>(['https://mainnet.infura.io/v3/9b96ee8ae39f44f7b6039b5bb73d22a2' tx-hash.msg])]~
+      [%pass /get-tx %arvo %k %fard dap.bowl %get-tx-by-hash %noun !>([rpc-endpoint tx-hash.msg])]~
     ==
     ::
       %sss-to-pub
