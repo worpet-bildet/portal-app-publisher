@@ -104,16 +104,22 @@
         ==
       =/  cards=(list card)
         =+  ~(tap in our-apps.state)
-        %+  turn  -
+        %+  murn  -
         |=  [=ship =desk]
+        ?:  (~(has by wex.bowl) [/our-treaty/(scot %p ship)/[desk] our.bowl %treaty])
+          ~
+        %-  some
         :*  %pass  /our-treaty/(scot %p ship)/[desk]  %agent
             [our.bowl %treaty]  %watch  /treaty/(scot %p ship)/[desk]
         ==
       =^  cards-1  pub-portal-devs  
         (give:du-portal-devs [%portal-devs ~] [%init ~])
       :_  this
-      %+  snoc  (welp cards cards-1)
-      [%pass /our-apps %agent [our.bowl %treaty] %watch /alliance]
+      ;:  welp  cards  cards-1
+      ?:  (~(has by wex.bowl) [/our-apps our.bowl %treaty])
+          ~
+        [%pass /our-apps %agent [our.bowl %treaty] %watch /alliance]~
+      ==
     ==
     ::
       %portal-message
@@ -164,31 +170,36 @@
   ^-  (quip card _this)
   ?+    wire    (on-agent:default wire sign)
       [%our-apps ~]
+    ::  this takes just apps ids
     ?+    -.sign    (on-agent:default wire sign)
         %fact
       =/  upd  !<(update:alliance:treaty q.cage.sign)
       =^  cards  our-apps
         ?-  -.upd
+          ::  get treaty, and then add to treaties
             %add  
           :_  (~(put in our-apps) [ship.upd desk.upd])
           :~  :*  %pass  /our-treaty/(scot %p ship.upd)/[desk.upd]  %agent
           [our.bowl %treaty]  %watch  /treaty/(scot %p ship.upd)/[desk.upd]
           ==  ==
           ::
+          ::  remove from our-apps, it's okay to keep the treaty in treaties
           %del  `(~(del in our-apps) [ship.upd desk.upd])
+          ::
+          ::  never get %ini?
           %ini  `init.upd
         ==
       [cards this]
     ==
     ::
       [%our-treaty @ @ ~]
+    ::  this take treaty which we subbed to in %add, on %our-apps wire
     ?+    -.sign    (on-agent:default wire sign)
         %fact
       =/  treaty  !<(treaty:treaty q.cage.sign)
       =.  treaties  (~(put by treaties) [our.bowl `@t`i.t.t.wire] treaty)
       `this
     ==
-    ::
   ==
 ++  on-arvo
   |=  [=wire sign=sign-arvo]
