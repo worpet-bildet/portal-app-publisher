@@ -1,5 +1,5 @@
 /-  *action, docket, treaty, *app-pub
-/+  ethereum
+/+  ethereum, treaty-lib=treaty
 |%
 ++  enjs
   =,  enjs:format
@@ -16,6 +16,8 @@
       %+  frond  'desks-for-sale'  (enjs-desks-for-sale +.result)
         %rpc-endpoint
       %+  frond  'rpc-endpoint'  s++.result
+        %treaties
+      %+  frond  'treaties'  (enjs-treaties +.result)
         %our-apps
       %+  frond  'our-apps'  (enjs-our-apps +.result)
         %portal-devs
@@ -90,6 +92,21 @@
     :-  (crip ;:(welp (scow %p ship.k) "/" (scow %tas desk.k)))
     (enjs-ship v)
   ::
+  ++  enjs-treaties
+    |=  treaties=(map [ship=@p desk=@tas] treaty:treaty)
+    ^-  json
+    :-  %o
+    =+  ~(tap by treaties)
+    %-  malt  %+  turn  -
+    |=  [k=[ship=@p desk=@tas] =treaty:treaty]
+    ^-  [@t json]
+    :-  (crip ;:(welp (scow %p ship.k) "/" (scow %tas desk.k)))
+    (enjs-treaty treaty)
+  ::
+  ++  enjs-treaty
+    |=  =treaty:treaty
+    (treaty:enjs:treaty-lib treaty)
+  ::
   ++  enjs-hex
     |=  hex=@ux
     ^-  json
@@ -110,7 +127,7 @@
     ;;  action
     %.  jon
     %-  of
-    :~  [%sign-app (ot:dejs ~[dev+dejs-ship dits-desk+so])]
+    :~  [%sign-app (ot:dejs ~[dev+dejs-ship dist-desk+so])]
         [%publish (ot:dejs ~[desk+so eth-price+ni receiving-address+dejs-hex])]
         [%unpublish (ot:dejs ~[desk+so])]
         [%set-rpc-endpoint (ot:dejs ~[endpoint+so])]

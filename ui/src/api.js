@@ -34,6 +34,8 @@ export const api = {
     scry({ app: 'portal-app-publisher', path: '/rpc-endpoint' }),
   getTreatyPublishedApps: () =>
     scry({ app: 'portal-app-publisher', path: '/our-apps' }),
+  getAllTreaties: () =>  //  this includes treaties from apps which are not treaty published
+  scry({ app: 'portal-app-publisher', path: '/treaties' }),
   getPortalDevs: () =>  // devs who we give the privilege to share our app on %portal
     scry({ app: 'portal-app-publisher', path: '/portal-devs' }),
 
@@ -56,6 +58,17 @@ export const api = {
       json: {
         unpublish: {
           desk: 'sell-me',
+        },
+      },
+    }),
+  signApp: () =>  // this will send the price if the price has been set with %publish
+    poke({
+      app: 'portal-app-publisher',
+      mark: 'action',
+      json: {
+        "sign-app": {
+          dev: "~zod",
+          "dist-desk": "~zod/app1",
         },
       },
     }),

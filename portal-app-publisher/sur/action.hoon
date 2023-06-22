@@ -1,22 +1,17 @@
 |%
 +$  action  
-  $%  [%sign-app dev=ship dist-desk=@t]  ::  todo, should set price
+  $%  [%sign-app dev=ship dist-desk=@t]  :: if you sign an app which is for sale, it will send the price
       [%agent-init ~]
       [%publish =desk eth-price=@ud receiving-address=@ux]  
       [%unpublish =desk]
       [%set-rpc-endpoint endpoint=@ta]
       [%test-payment-confirmed =ship =desk]
-      ::::
-      ::  what should be in the state for app-pub (e.g. ships who payed and how much)?
+      ::
       [%blah ~]
       ::
-      ::  TODO treaty unpublish flow to make it work when you unpublish
-      ::  basically desk should be removed from our-apps
-      ::
       ::  ask people to make docket file which we read from portal-app-pub
-      ::  price -> in %app item (how to get it there?)
-      ::  recepient address -> on portal app pub
       ::
+      ::  Payment Flow
       ::  buyer pokes from his portal to seller's app pub
       ::  seller creates random data and saves in state
       ::  sends that data back to the buyer + receiving address
@@ -24,10 +19,9 @@
       ::  seller checks tx, makes sure that the amount is correct + random data is correct
       ::  sellers changes perms, sends the poke to buyer, buyer downloads app
       ::
+      ::
       ::  how much dev has made on portal
       ::  some summarizer of data for devs (how much they've made)
       ::
-      ::  how will it look in portal?
-
   ==
 --
