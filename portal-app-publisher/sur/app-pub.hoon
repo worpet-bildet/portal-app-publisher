@@ -13,7 +13,7 @@
 ::
 +$  app-pub-result
   $%  [%processing-payments =processing-payments]
+      [%processed-payments =processed-payments]
       [%desks-for-sale =desks-for-sale]
-      [%receiving-address =receiving-address]
   ==
 --

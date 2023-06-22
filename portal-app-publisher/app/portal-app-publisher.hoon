@@ -60,7 +60,6 @@
       `this
       ::
         [%publish *]
-      ::  TODO test flow
       ?.  (~(has in .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl))) desk.act)
         ~&  "desk doesn't exist"
         `this
@@ -68,11 +67,11 @@
         ~&  "desk treaty published, first unpublish it from treaty to sell it"
         `this
       ?:  (~(has by desks-for-sale) desk.act)
-        ~&  "desk {<desk>} already published"
+        ~&  "desk {<desk.act>} already for sale"
         `this
       =/  group-name  (group-from-desk desk.act)
       =.  desks-for-sale  (~(put by desks-for-sale) [desk eth-price receiving-address]:act)
-      =/  perms  .^([r=dict:clay w=dict:clay] %cp /=[desk.act]=)
+      =/  perms  .^([r=dict:clay w=dict:clay] %cp /(scot %p our.bowl)/[desk.act]/(scot %da now.bowl))
       :_  this
                     ::(map @ta crew) 
       ?^  (~(get by q.who.rul.r.perms) group-name)
@@ -129,7 +128,7 @@
       =/  hex  `@ux`(mod eny.bowl (pow 4 16))
       ::  crash if not for sale
       =/  [=eth-price =receiving-address]  (~(got by desks-for-sale) desk.msg)
-      =/  perms  .^([r=dict:clay w=dict:clay] %cp /=[desk.msg]=)
+      =/  perms  .^([r=dict:clay w=dict:clay] %cp /(scot %p our.bowl)/[desk.msg]/(scot %da now.bowl))
       ?~  crew=(~(get by q.who.rul.r.perms) (group-from-desk desk.msg))
         ~&  >>  "desk not for sale"
         `this
@@ -174,20 +173,26 @@
     ?+    -.sign    (on-agent:default wire sign)
         %fact
       =/  upd  !<(update:alliance:treaty q.cage.sign)
-      =^  cards  our-apps
+      =^  cards  state
         ?-  -.upd
           ::  get treaty, and then add to treaties
             %add  
-          :_  (~(put in our-apps) [ship.upd desk.upd])
+          =.  our-apps  (~(put in our-apps) [ship.upd desk.upd])
+          :_  state
           :~  :*  %pass  /our-treaty/(scot %p ship.upd)/[desk.upd]  %agent
           [our.bowl %treaty]  %watch  /treaty/(scot %p ship.upd)/[desk.upd]
           ==  ==
           ::
-          ::  remove from our-apps, it's okay to keep the treaty in treaties
-          %del  `(~(del in our-apps) [ship.upd desk.upd])
+          ::  remove from our-apps, remove treaty from treaties
+          %del
+          =.  our-apps  (~(del in our-apps) [ship desk]:upd)
+          =.  treaties  (~(del by treaties) [ship desk]:upd)
+          `state
           ::
           ::  never get %ini?
-          %ini  `init.upd
+            %ini  
+          =.  our-apps  init.upd
+          `state
         ==
       [cards this]
     ==
@@ -230,7 +235,7 @@
   =.  processing-payments  (~(del by processing-payments) hex)
   =.  processed-payments  %+  snoc  processed-payments
     [buyer.u.processing-data desk.u.processing-data tx-hash now.bowl]
-  =/  perms  .^([r=dict:clay w=dict:clay] %cp /=[desk.u.processing-data]=)
+  =/  perms  .^([r=dict:clay w=dict:clay] %cp /(scot %p our.bowl)/[desk.u.processing-data]/(scot %da now.bowl))
   =/  group-name  (group-from-desk desk.u.processing-data)
   :_  this
                      ::(map @ta crew) 

@@ -1,9 +1,10 @@
 /-  *app-pub
+/+  app-pub-js
 |_  result=app-pub-result
 ++  grow
   |%
   ++  noun  result
-  ++  json  (en-vase:etch !>(msg))
+  ++  json  (enjs-app-pub-result:enjs:app-pub-js result)
   --
 ++  grab
   |%

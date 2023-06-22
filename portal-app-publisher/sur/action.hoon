@@ -2,7 +2,6 @@
 +$  action  
   $%  [%sign-app dev=ship dist-desk=@t]  ::  todo, should set price
       [%agent-init ~]
-      [%get-tx-by-hash url=@ta tx-hash=@t]
       [%publish =desk eth-price=@ud receiving-address=@ux]  
       [%set-rpc-endpoint endpoint=@ta]
       ::  [%unpublish =desk] ?
