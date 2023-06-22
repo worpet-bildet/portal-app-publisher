@@ -119,6 +119,12 @@
           ~
         [%pass /our-apps %agent [our.bowl %treaty] %watch /alliance]~
       ==
+      ::
+        [%test-payment-confirmed *]
+      :_  this
+      :~  :*  %pass  /payment-confirm  %agent  [ship.act %portal-manager]  %poke  
+              %portal-message  !>([%payment-confirmed *@ux desk.act])
+      ==  ==
     ==
     ::
       %portal-message

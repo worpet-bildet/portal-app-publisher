@@ -4,6 +4,7 @@
       [%agent-init ~]
       [%publish =desk eth-price=@ud receiving-address=@ux]  
       [%set-rpc-endpoint endpoint=@ta]
+      [%test-payment-confirmed =ship =desk]
       ::  [%unpublish =desk] ?
       ::::
       ::  what should be in the state for app-pub (e.g. ships who payed and how much)?
