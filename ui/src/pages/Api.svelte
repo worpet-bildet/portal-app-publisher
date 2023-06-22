@@ -11,6 +11,7 @@
       {#await fn()}
         <div>Calling...</div>
       {:then res}
+        {console.log({ name, result: res }) || ''}
         <div>Done!</div>
       {:catch}
         <div class="text-error">Failed!</div>
