@@ -64,7 +64,7 @@
       ?.  (~(has in .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl))) desk.act)
         ~&  "desk doesn't exist"
         `this
-      ?.  (~(has in our-apps) [our.bowl desk.act])
+      ?:  (~(has in our-apps) [our.bowl desk.act])
         ~&  "desk treaty published, first unpublish it from treaty to sell it"
         `this
       ?:  (~(has by desks-for-sale) desk.act)
