@@ -9,6 +9,7 @@ export const scry = (s) => urbit.scry(s);
 export const me = `~${urbit.ship}`;
 
 export const api = {
+  // SCRIES / POKES TO OTHER APPS
   getInstalledApps: () => {
     return Promise.all([
       scry({
@@ -21,13 +22,15 @@ export const api = {
       }),
     ]);
   },
+
+  // SCRIES / POKES TO PORTAL
   getProcessingPayments: () =>
     scry({ app: 'portal-app-publisher', path: '/processing-payments' }),
   getProcessedPayments: () =>
     scry({ app: 'portal-app-publisher', path: '/processed-payments' }),
   getDesksForSale: () =>
     scry({ app: 'portal-app-publisher', path: '/desks-for-sale' }),
-  publishApp: () => {
+  publishApp: () =>
     poke({
       app: 'portal-app-publisher',
       mark: 'action',
@@ -38,8 +41,7 @@ export const api = {
           'eth-price': 1000,
         },
       },
-    });
-  },
+    }),
 };
 
 export const usePortalSubscription = async (onEvent) => {
