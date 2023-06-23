@@ -29,6 +29,17 @@ export const api = {
     scry({ app: 'portal-app-publisher', path: '/processed-payments' }),
   getDesksForSale: () =>
     scry({ app: 'portal-app-publisher', path: '/desks-for-sale' }),
+  getRpcEndpoint: () =>
+    scry({ app: 'portal-app-publisher', path: '/rpc-endpoint' }),
+  getTreatyPublishedApps: () =>
+    scry({ app: 'portal-app-publisher', path: '/our-apps' }),
+  getAllTreaties: () =>
+    //  this includes treaties from apps which are not treaty published
+    scry({ app: 'portal-app-publisher', path: '/treaties' }),
+  getPortalDevs: () =>
+    // devs who we give the privilege to share our app on %portal
+    scry({ app: 'portal-app-publisher', path: '/portal-devs' }),
+
   publishApp: (desk, receivingAddress, ethPrice) =>
     poke({
       app: 'portal-app-publisher',
@@ -41,13 +52,35 @@ export const api = {
         },
       },
     }),
+  unpublishApp: (desk) =>
+    poke({
+      app: 'portal-app-publisher',
+      mark: 'action',
+      json: {
+        unpublish: {
+          desk,
+        },
+      },
+    }),
+  signApp: (dev, distDesk) =>
+    // this will send the price if the price has been set with %publish
+    poke({
+      app: 'portal-app-publisher',
+      mark: 'action',
+      json: {
+        'sign-app': {
+          dev: dev,
+          'dist-desk': distDesk,
+        },
+      },
+    }),
   setRpcEndpoint: (endpoint) =>
     poke({
       app: 'portal-app-publisher',
       mark: 'action',
       json: {
         'set-rpc-endpoint': {
-          endpoint,
+          endpoint: endpoint,
         },
       },
     }),
@@ -58,6 +91,8 @@ export const mockData = {
   setRpcEndpoint: [
     'https://mainnet.infura.io/v3/9b96ee8ae39f44f7b6039b5bb73d22a2',
   ],
+  unpublishApp: ['sell-me'],
+  signApp: ['~zod', '~zod/app1'],
 };
 
 export const usePortalSubscription = async (onEvent) => {

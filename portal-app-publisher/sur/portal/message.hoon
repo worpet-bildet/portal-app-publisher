@@ -1,9 +1,9 @@
-/-  treaty
+/-  treaty, *app-pub
 /+  *sig
 |%
 +$  message
   $%  ::  make sure to keep the previous funcitonality, while adding price and paymen
-      [%sign-app dist-desk=@t sig=signature =treaty:treaty]
+      [%sign-app dist-desk=@t sig=signature =treaty:treaty eth-price=(unit @ud)]
       ::
       ::  seller receives
       [%payment-request =desk]
