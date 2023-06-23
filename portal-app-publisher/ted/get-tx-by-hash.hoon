@@ -4,7 +4,7 @@
 ^-  thread:spider
 |^
 |=  args=vase
-=+  !<([url=@ta tx-hash=@ux] args)
+=+  !<([url=@ta tx-hash=@t] args)
 =/  m  (strand ,vase)
 ^-  form:m
 ::   time based fetching, try again after x time if you don't get data

@@ -2,7 +2,7 @@
 +$  action  
   $%  [%sign-app dev=ship dist-desk=@t]  :: if you sign an app which is for sale, it will send the price
       [%agent-init ~]
-      [%publish =desk eth-price=@ud receiving-address=@ux]  
+      [%publish =desk eth-price=@t receiving-address=@t]  
       [%unpublish =desk]
       [%set-rpc-endpoint endpoint=@ta]
       [%test-payment-confirmed =ship =desk]

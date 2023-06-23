@@ -3,15 +3,15 @@
 |%
 +$  message
   $%  ::  make sure to keep the previous funcitonality, while adding price and paymen
-      [%sign-app dist-desk=@t sig=signature =treaty:treaty eth-price=(unit @ud)]
+      [%sign-app dist-desk=@t sig=signature =treaty:treaty eth-price=(unit @t)]
       ::
       ::  seller receives
       [%payment-request =desk]
       ::  seller sends
-      [%payment-reference hex=@ux eth-price=@ud receiving-address=@ux]
+      [%payment-reference hex=@t eth-price=@t receiving-address=@t]
       ::  seller receives
-      [%payment-tx-hash tx-hash=@ux]
+      [%payment-tx-hash tx-hash=@t]
       ::  sellers sends
-      [%payment-confirmed tx-hash=@ux =desk]
+      [%payment-confirmed tx-hash=@t =desk]
   ==
 --
