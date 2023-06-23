@@ -30,14 +30,14 @@
     :-  %o
     =+  ~(tap by processing-payments)
     %-  malt  %+  turn  -
-    |=  [hex=@ux [=buyer =desk =eth-price =receiving-address]]
+    |=  [hex=@t [=buyer =desk =eth-price =receiving-address]]
     ^-  [@t json]
-    :-  ;;(@t +:(enjs-hex hex))
+    :-  hex
     %-  pairs
     :~  ['buyer' (enjs-ship buyer)]
         ['desk' s+desk]
-        ['eth-price' s+(scot %ud eth-price)]
-        ['receiving-address' (enjs-hex receiving-address)]
+        ['eth-price' s+eth-price]
+        ['receiving-address' s+receiving-address]
     ==
   ::
   ++  enjs-processed-payments
@@ -45,12 +45,12 @@
     ^-  json
     :-  %a
     %+  turn  processed-payments
-    |=  [=buyer =desk tx-hash=@ux time=@da]
+    |=  [=buyer =desk tx-hash=@t time=@da]
     ^-  json
     %-  pairs
     :~  ['buyer' `json`(enjs-ship buyer)]
         ['desk' `json`s+desk]
-        ['tx-hash' `json`(enjs-hex tx-hash)]
+        ['tx-hash' s+tx-hash]
         ['time' `json`(^time time)]
     ==
   ::
@@ -64,8 +64,8 @@
     ^-  [@t json]
     :-  desk
     %-  pairs
-    :~  ['eth-price' s+(scot %ud eth-price)]
-        ['receiving-address' (enjs-hex receiving-address)]
+    :~  ['eth-price' s+eth-price]
+        ['receiving-address' s+receiving-address]
     ==
   ::
   ++  enjs-our-apps
@@ -128,7 +128,7 @@
     %.  jon
     %-  of
     :~  [%sign-app (ot:dejs ~[dev+dejs-ship dist-desk+so])]
-        [%publish (ot:dejs ~[desk+so eth-price+ni receiving-address+dejs-hex])]
+        [%publish (ot:dejs ~[desk+so eth-price+so receiving-address+so])]
         [%unpublish (ot:dejs ~[desk+so])]
         [%set-rpc-endpoint (ot:dejs ~[endpoint+so])]
     ==

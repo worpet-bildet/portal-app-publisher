@@ -87,7 +87,7 @@ export const api = {
 };
 
 export const mockData = {
-  publishApp: ['sell-me', '0x1CeDC0f3Af8f9841B0a1F5c1a4DDc6e1a1629074', 1000],
+  publishApp: ['sell-me', '0x1CeDC0f3Af8f9841B0a1F5c1a4DDc6e1a1629074', '1000'],
   setRpcEndpoint: [
     'https://mainnet.infura.io/v3/9b96ee8ae39f44f7b6039b5bb73d22a2',
   ],

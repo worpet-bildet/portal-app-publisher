@@ -131,7 +131,7 @@
       ?~  treaty=(~(gut by treaties) [dist-name desk-name]:u:dist-desk ~)
         ~&  >  "app is either not treaty published, or it is not published with %portal-app-publisher"
         `this
-      =/  eth-price=(unit @ud)
+      =/  eth-price=(unit @t)
         ?~  v=(~(gut by desks-for-sale) desk-name.u.dist-desk ~)
           ~
         (some eth-price:v)
@@ -175,7 +175,7 @@
         [%test-payment-confirmed *]
       :_  this
       :~  :*  %pass  /payment-confirm  %agent  [ship.act %portal-manager]  %poke  
-              %portal-message  !>([%payment-confirmed *@ux desk.act])
+              %portal-message  !>([%payment-confirmed *@t desk.act])
       ==  ==
     ==
     ::
@@ -183,7 +183,7 @@
     =/  msg  !<(message:portal-message vase)
     ?+    msg    `this
         [%payment-request *]
-      =/  hex  `@ux`(mod eny.bowl (pow 4 16))
+      =/  hex  `@t`(scot %ux (mod eny.bowl (pow 4 16)))
       ::  crash if not for sale
       =/  [=eth-price =receiving-address]  (~(got by desks-for-sale) desk.msg)
       =/  perms  .^([r=dict:clay w=dict:clay] %cp /(scot %p our.bowl)/[desk.msg]/(scot %da now.bowl))
@@ -283,7 +283,7 @@
     `this
   ::  TODO test flow
   ~&  >>  "didnt test new devasing"
-  =+  !<([tx-hash=@ux result=?(~ transaction-result)] q.p.p.sign)
+  =+  !<([tx-hash=@t result=?(~ transaction-result)] q.p.p.sign)
   ?~  result
     ~&  >>  "transaction wasn't made over last 24 hr"
     `this
@@ -291,13 +291,15 @@
   ?~  processing-data=(~(get by processing-payments) hex)
     ~&  >>  "payment with this hex never made"
     `this
-  ?.  =((need to.result) receiving-address.u.processing-data)  ::  is it possible to have to.result empty?
-    ~&  >>  "incorrect receiving address"
-    `this
-  ?.  (gte `@ud`(need value.result) eth-price.u.processing-data) :: is it possible to have value.result empty?
-    ~&  >>  "payment too smol"
+  ::  TODO fix this when receiving-address is a string
+  :: ?.  =((need to.result) receiving-address.u.processing-data)  ::  is it possible to have to.result empty?
+  ::   ~&  >>  "incorrect receiving address"
+  ::   `this
+  ::  TODO fix this when eth-price is a string?
+  :: ?.  (gte `@ud`(need value.result) eth-price.u.processing-data) :: is it possible to have value.result empty?
+  ::   ~&  >>  "payment too smol"
     ::  should I remove hex from processing payments here?
-    `this
+    ::`this
   ~&  >  "success!"
   =.  processing-payments  (~(del by processing-payments) hex)
   =.  processed-payments  %+  snoc  processed-payments
