@@ -47,6 +47,7 @@ export const getApp = (desk) => {
   return {
     ...get(state)['desks-for-sale'][desk],
     ...getDeskDetails(desk),
+    desk,
   };
 };
 

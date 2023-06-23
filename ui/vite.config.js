@@ -12,6 +12,7 @@ export default defineConfig({
       '@root': path.resolve('./src'),
       '@assets': path.resolve('./src/assets'),
       '@components': path.resolve('./src/components'),
+      '@fragments': path.resolve('./src/fragments'),
       '@pages': path.resolve('./src/pages'),
     },
   },

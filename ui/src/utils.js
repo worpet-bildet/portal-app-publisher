@@ -5,5 +5,5 @@ export const isValidEthAddress = (ethAddress) => {
 };
 
 export const ethToWei = (eth) => {
-  return new BigNumber(eth).multipliedBy(new BigNumber(10).pow(18)).toNumber();
+  return new BigNumber(eth).multipliedBy(new BigNumber(10).pow(18)).toString();
 };

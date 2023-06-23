@@ -109,7 +109,7 @@ export const usePortalSubscription = async (onEvent) => {
 export const usePortalAppPublisherSubscription = async (onEvent) => {
   const portalAppPublisherSub = await urbit.subscribe({
     app: 'portal-app-publisher',
-    path: '/all',
+    path: '/updates',
     event: onEvent,
     err: console.error,
     quit: console.error,

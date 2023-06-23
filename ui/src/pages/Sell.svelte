@@ -6,7 +6,8 @@
 
   let app = {};
 
-  $: deskDetails = isForSale(app.desk) ? null : getDeskDetails(app.desk);
+  $: deskDetails = getDeskDetails(app.desk);
+  $: console.log({ deskDetails });
   $: isValid = deskDetails && isValidEthAddress(app.ethAddress) && app.price;
 
   const publishForSale = async () => {
@@ -40,7 +41,7 @@
       <p>{app.desk} is already for sale, please enter another desk.</p>
     {/if}
   </div>
-{:else}
+{:else if !isForSale(app.desk)}
   <div class="w-full h-full flex flex-col items-start">
     <div class="text-xl">{app.desk}</div>
   </div>

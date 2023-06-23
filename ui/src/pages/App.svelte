@@ -1,14 +1,18 @@
 <script>
   import { sigil, stringRenderer } from '@tlon/sigil-js';
+  import { api } from '@root/api';
   import { state, getApp, getSalesOfDesk } from '@root/state';
+  import { Modal } from '@fragments';
 
   export let params;
 
   let app = {};
   let sales = [];
+  let unpublishModalOpen;
   const load = (desk) => {
     app = getApp(desk);
     sales = getSalesOfDesk(desk);
+    console.log({ app });
   };
 
   // Reactive stuff, make sure we load the correct desk information
@@ -21,9 +25,6 @@
 
 <div>
   {#if app}
-    <div class="flex items-start">
-      <h1>{app.title}</h1>
-    </div>
     <div class="flex items-center gap-4 rounded-xl p-4">
       <img class="h-24 w-24 rounded-xl object-cover" src={app.image} />
       <div class="flex flex-col items-start">
@@ -34,6 +35,10 @@
       </div>
     </div>
   {/if}
+  <div class="border-b border-white w-full" />
+  <div class="flex w-full justify-end p-5">
+    <button on:click={() => (unpublishModalOpen = true)}>Unpublish</button>
+  </div>
   <div class="border-b border-white w-full" />
   {#if sales}
     <div class="flex flex-col items-start py-5">
@@ -60,4 +65,16 @@
       {/each}
     </div>
   {/if}
+  <Modal bind:open={unpublishModalOpen}>
+    <div class="flex flex-col gap-4">
+      <div class="text-2xl">Unpublish {app.title}</div>
+      <div>
+        If you unpublish this app from Portal, any commits to this desk will not
+        be propagated to existing buyers.
+      </div>
+      <div class="flex w-full justify-end">
+        <button on:click={() => api.unpublishApp(app.desk)}>Confirm</button>
+      </div>
+    </div>
+  </Modal>
 </div>
