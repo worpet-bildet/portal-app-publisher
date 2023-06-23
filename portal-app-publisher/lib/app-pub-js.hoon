@@ -36,7 +36,7 @@
     %-  pairs
     :~  ['buyer' (enjs-ship buyer)]
         ['desk' s+desk]
-        ['eth-price' n+(scot %ud eth-price)]
+        ['eth-price' s+(scot %ud eth-price)]
         ['receiving-address' (enjs-hex receiving-address)]
     ==
   ::
@@ -64,7 +64,7 @@
     ^-  [@t json]
     :-  desk
     %-  pairs
-    :~  ['eth-price' n+(scot %ud eth-price)]
+    :~  ['eth-price' s+(scot %ud eth-price)]
         ['receiving-address' (enjs-hex receiving-address)]
     ==
   ::
