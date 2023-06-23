@@ -21,17 +21,15 @@
 
 <div>
   {#if app}
-    {@const { name, image, price, purchases } = app}
     <div class="flex items-start">
-      <h1>{name}</h1>
+      <h1>{app.title}</h1>
     </div>
     <div class="flex items-center gap-4 rounded-xl p-4">
-      <img class="h-24 w-24 rounded-xl object-cover" src={image} />
+      <img class="h-24 w-24 rounded-xl object-cover" src={app.image} />
       <div class="flex flex-col items-start">
-        <div>{name}</div>
+        <div>{app.title}</div>
         <div class="flex gap-4">
-          <div>{price} ETH</div>
-          <div>{purchases} sales</div>
+          <div>{app['eth-price']} ETH</div>
         </div>
       </div>
     </div>
