@@ -22,7 +22,6 @@ export const api = {
       }),
     ]);
   },
-
   // SCRIES / POKES TO PORTAL
   getProcessingPayments: () =>
     scry({ app: 'portal-app-publisher', path: '/processing-payments' }),
@@ -30,28 +29,35 @@ export const api = {
     scry({ app: 'portal-app-publisher', path: '/processed-payments' }),
   getDesksForSale: () =>
     scry({ app: 'portal-app-publisher', path: '/desks-for-sale' }),
-  publishApp: () =>
+  publishApp: (desk, receivingAddress, ethPrice) =>
     poke({
       app: 'portal-app-publisher',
       mark: 'action',
       json: {
         publish: {
-          desk: 'sell-me',
-          'receiving-address': '0x1CeDC0f3Af8f9841B0a1F5c1a4DDc6e1a1629074',
-          'eth-price': 1000,
+          desk,
+          'receiving-address': receivingAddress,
+          'eth-price': ethPrice,
         },
       },
     }),
-  setRpcEndpoint: () =>
-  poke({
-    app: 'portal-app-publisher',
-    mark: 'action',
-    json: {
-      "set-rpc-endpoint": {
-        endpoint: 'https://mainnet.infura.io/v3/9b96ee8ae39f44f7b6039b5bb73d22a2',
+  setRpcEndpoint: (endpoint) =>
+    poke({
+      app: 'portal-app-publisher',
+      mark: 'action',
+      json: {
+        'set-rpc-endpoint': {
+          endpoint,
+        },
       },
-    },
-  }),
+    }),
+};
+
+export const mockData = {
+  publishApp: ['sell-me', '0x1CeDC0f3Af8f9841B0a1F5c1a4DDc6e1a1629074', 1000],
+  setRpcEndpoint: [
+    'https://mainnet.infura.io/v3/9b96ee8ae39f44f7b6039b5bb73d22a2',
+  ],
 };
 
 export const usePortalSubscription = async (onEvent) => {

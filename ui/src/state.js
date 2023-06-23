@@ -2,17 +2,23 @@ import { get, writable } from 'svelte/store';
 import { api } from './api';
 
 export const state = writable({
-  apps: [],
-  sales: [],
   installedApps: {},
-  processingPayments: {},
-  processedPayments: {},
-  desksForSale: {},
+  'processing-payments': {},
+  'processed-payments': {},
+  'desks-for-sale': {},
+  'rpc-endpoint': '',
 });
 
 state.subscribe((s) => {
   console.log('========= STATE ==========', { s });
 });
+
+export const merge = (res) => {
+  state.update((s) => {
+    s = { ...s, ...res };
+    return s;
+  });
+};
 
 export const refreshInstalledApps = () => {
   api.getInstalledApps().then(([{ initial }, kiln]) => {
@@ -29,29 +35,8 @@ export const refreshInstalledApps = () => {
   });
 };
 
-export const refreshProcessingPayments = () => {
-  api.getProcessingPayments().then((result) => {
-    state.update((s) => {
-      s.processingPayments = result;
-      return s;
-    });
-  });
-};
-export const refreshProcessedPayments = () => {
-  api.getProcessedPayments().then((result) => {
-    state.update((s) => {
-      s.processedPayments = result;
-      return s;
-    });
-  });
-};
-export const refreshDesksForSale = () => {
-  api.getDesksForSale().then((result) => {
-    state.update((s) => {
-      s.desksForSale = result;
-      return s;
-    });
-  });
+export const isForSale = (desk) => {
+  return get(state)?.['desks-for-sale']?.[desk];
 };
 
 export const getDeskDetails = (desk) => {
@@ -59,11 +44,14 @@ export const getDeskDetails = (desk) => {
 };
 
 export const getApp = (desk) => {
-  return get(state).apps.find((a) => a.desk === desk);
+  return {
+    ...get(state)['desks-for-sale'][desk],
+    ...getDeskDetails(desk),
+  };
 };
 
 export const getSalesOfDesk = (desk) => {
-  return get(state).sales.filter((s) => s.desk === desk);
+  // return get(state).sales.filter((s) => s.desk === desk);
 };
 
 export const handleSubscriptionEvent = (event, type) => {
@@ -72,6 +60,10 @@ export const handleSubscriptionEvent = (event, type) => {
 
 export const refreshAll = () => {
   refreshInstalledApps();
+
+  api.getProcessingPayments().then(merge);
+  api.getProcessedPayments().then(merge);
+  api.getDesksForSale().then(merge);
 };
 refreshAll();
 
@@ -125,5 +117,5 @@ const populateState = () => {
 };
 
 setTimeout(() => {
-  populateState();
+  // populateState();
 }, 1500);

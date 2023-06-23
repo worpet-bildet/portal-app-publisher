@@ -9,9 +9,10 @@ export default defineConfig({
   plugins: [svelte(), urbitPlugin({ base: 'portal-app-publisher', target })],
   resolve: {
     alias: {
-      '@assets': path.resolve('./src/assets'),
       '@root': path.resolve('./src'),
-      '@pages': path.resolve('./pages'),
+      '@assets': path.resolve('./src/assets'),
+      '@components': path.resolve('./src/components'),
+      '@pages': path.resolve('./src/pages'),
     },
   },
 });
