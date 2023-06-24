@@ -12,20 +12,20 @@
 ::   1-10min - every min (9 times)
 ::   10-60min - every 5 min (10 times)
 ::   1hr - 24 hr - every 15min (23*15=345 times)
-%-  pure:m  
-!>  :-  tx-hash  :: return tx-hash with transaction-result
+  :: return tx-hash with transaction-result
 =/  tracker  [time=~s5 count=0]
 |-
 ?:  =(tracker [~s0 0])
-  ~
+  (pure:m !>([tx-hash ~]))
 ;<  jon=json  bind:m
   %+  request-rpc:ethio  url
   :*  `'tx by hash'
       %eth-get-transaction-by-hash
-      tx-hash
+      (hex-to-num:ethereum tx-hash)
   ==
 ?^  jon
-  (parse-transaction-result jon)
+  %-  pure:m 
+  !>  [tx-hash (parse-transaction-result jon)]
 ;<  ~  bind:m  (sleep time.tracker)
 %=  $
     tracker

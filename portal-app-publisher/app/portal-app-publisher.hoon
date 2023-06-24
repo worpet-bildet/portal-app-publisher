@@ -287,8 +287,7 @@
   ?~  result
     ~&  >>  "transaction wasn't made over last 24 hr"
     `this
-  =/  hex  (hex-to-num:ethereum input.result)
-  ?~  processing-data=(~(get by processing-payments) hex)
+  ?~  processing-data=(~(get by processing-payments) input.result)
     ~&  >>  "payment with this hex never made"
     `this
   ::  TODO fix this when receiving-address is a string
