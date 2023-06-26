@@ -25,7 +25,7 @@
       from=@t
       to=(unit @t)
       input=@t
-      value=(unit @t)
+      value=(unit @t)  ::  assuming this will always be hex!
   ==
 ::
 ::  some helpers
@@ -44,4 +44,14 @@
   |=  =desk
   ^-  @ta
   (crip (weld "portal-sold-" (trip desk)))
+::
+::  paid is hex
+::  price is decimal integer
+++  paid-enough
+  |=  [paid=@t price=@t]
+  ^-  ?
+  %+  gte
+  `@ud`(hex-to-num:ethereum paid)
+  `@ud`(scan (trip price) dem)
+::
 --
