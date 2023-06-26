@@ -1,5 +1,5 @@
 /-  *action, treaty, portal-devs, portal-message, *app-pub, docket
-/+  default-agent, dbug, *sig, *sss, *portal-app-pub, agentio
+/+  default-agent, dbug, *sig, *sss, *portal-app-pub, agentio, ethereum
 /$  app-pub-result-to-json  %app-pub-result  %json
 /$  json-to-action  %json  %action
 |%
@@ -73,7 +73,9 @@
         ~&  "desk treaty published, first unpublish it from treaty to sell it"
         `this
       =/  group-name  (group-from-desk desk.act)
-      =.  desks-for-sale  (~(put by desks-for-sale) [desk eth-price receiving-address]:act)
+      =/  eth-price  (crip (cass (trip eth-price.act)))
+      =/  receiving-address  (crip (cass (trip receiving-address.act)))
+      =.  desks-for-sale  (~(put by desks-for-sale) [desk.act eth-price receiving-address])
       =/  perms  .^([r=dict:clay w=dict:clay] %cp /(scot %p our.bowl)/[desk.act]/(scot %da now.bowl))
       ?:  =(%.n .^(? %cu /(scot %p our.bowl)/[desk.act]/(scot %da now.bowl)/desk/docket-0))
         ~&  >>  "docket doesn't exist"
@@ -171,19 +173,13 @@
           ~
         [%pass /our-apps %agent [our.bowl %treaty] %watch /alliance]~
       ==
-      ::
-        [%test-payment-confirmed *]
-      :_  this
-      :~  :*  %pass  /payment-confirm  %agent  [ship.act %portal-manager]  %poke  
-              %portal-message  !>([%payment-confirmed *@t desk.act])
-      ==  ==
     ==
     ::
       %portal-message
     =/  msg  !<(message:portal-message vase)
     ?+    msg    `this
         [%payment-request *]
-      =/  hex  `@t`(scot %ux (mod eny.bowl (pow 4 16)))
+      =/  hex  (crip (cass (num-to-hex:ethereum (mod eny.bowl (pow 4 16)))))
       ::  crash if not for sale
       =/  [=eth-price =receiving-address]  (~(got by desks-for-sale) desk.msg)
       =/  perms  .^([r=dict:clay w=dict:clay] %cp /(scot %p our.bowl)/[desk.msg]/(scot %da now.bowl))
@@ -276,33 +272,38 @@
 ++  on-arvo
   |=  [=wire sign=sign-arvo]
   ^-  (quip card:agent:gall _this)
-  ?>  ?=([%get-tx ~] wire)
+  ?.  ?=([%get-tx ~] wire)
+    ~&  >  another wire
+    ~&  >  sign
+    `this
   ?>  ?=([%khan %arow *] sign)
   ?.  ?=(%.y -.p.sign)
     ~&  >>  "fetching data failed"
     `this
-  ::  TODO test flow
-  ~&  >>  "didnt test new devasing"
   =+  !<([tx-hash=@t result=?(~ transaction-result)] q.p.p.sign)
   ?~  result
     ~&  >>  "transaction wasn't made over last 24 hr"
     `this
-  ?~  processing-data=(~(get by processing-payments) input.result)
-    ~&  >>  "payment with this hex never made"
+  =/  hex                (crip (cass (trip input.result)))
+  =/  receiving-address  (crip (cass (trip (need to.result))))
+  =/  eth-price          (crip (cass (trip (need value.result))))
+  ?~  processing-data=(~(get by processing-payments) hex)
+    ~&  >>  "payment with this hex not in processing payments"
     `this
-  ::  TODO fix this when receiving-address is a string
-  :: ?.  =((need to.result) receiving-address.u.processing-data)  ::  is it possible to have to.result empty?
-  ::   ~&  >>  "incorrect receiving address"
-  ::   `this
+  ?.  =((fall to.result '') receiving-address.u.processing-data)  ::  is it possible to have to.result empty?
+    ~&  (fall to.result '')
+    ~&  receiving-address.u.processing-data
+    ~&  >>  "incorrect receiving address"
+    `this
   ::  TODO fix this when eth-price is a string?
-  :: ?.  (gte `@ud`(need value.result) eth-price.u.processing-data) :: is it possible to have value.result empty?
+  :: ?.  (gte eth-price eth-price.u.processing-data) :: is it possible to have value.result empty?
   ::   ~&  >>  "payment too smol"
-    ::  should I remove hex from processing payments here?
-    ::`this
+  ::    ::should I remove hex from processing payments here?
+  ::   `this
   ~&  >  "success!"
   =.  processing-payments  (~(del by processing-payments) hex)
   =.  processed-payments  %+  snoc  processed-payments
-    [buyer.u.processing-data desk.u.processing-data tx-hash now.bowl]
+    [buyer.u.processing-data desk.u.processing-data (crip (cass (trip tx-hash))) now.bowl]
   =/  perms  .^([r=dict:clay w=dict:clay] %cp /(scot %p our.bowl)/[desk.u.processing-data]/(scot %da now.bowl))
   =/  group-name  (group-from-desk desk.u.processing-data)
   :_  this
@@ -310,7 +311,7 @@
   ?~  crew=(~(get by q.who.rul.r.perms) group-name)
     ~&  >>>  "this group should exist"
     ~
-  ::  giving read perms to buyer
+      ::  giving read perms to buyer
   :~  [%pass /set-group %arvo %c %cred group-name (~(put in u.crew) buyer.u.processing-data)] 
       :*  %pass  /payment-confirm  %agent  [buyer.u.processing-data %portal-manager]  %poke  
           %portal-message  !>([%payment-confirmed tx-hash desk.u.processing-data])

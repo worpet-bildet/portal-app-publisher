@@ -5,7 +5,6 @@
       [%publish =desk eth-price=@t receiving-address=@t]  
       [%unpublish =desk]
       [%set-rpc-endpoint endpoint=@ta]
-      [%test-payment-confirmed =ship =desk]
       ::
       [%blah ~]
       ::
