@@ -15,7 +15,7 @@
       {:then}
         <div>Done!</div>
       {:catch}
-        <div class="text-error">Failed!</div>
+        <div class="text-red-500">Failed!</div>
       {/await}
     </div>
   {/each}

@@ -56,7 +56,10 @@ export const getSalesOfDesk = (desk) => {
 };
 
 export const handleSubscriptionEvent = (event, type) => {
-  console.log({ event, type });
+  state.update((s) => {
+    s = { ...s, ...event };
+    return s;
+  });
 };
 
 export const refreshAll = () => {

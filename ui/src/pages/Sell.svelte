@@ -11,6 +11,7 @@
   $: isValid = deskDetails && isValidEthAddress(app.ethAddress) && app.price;
 
   const publishForSale = async () => {
+    console.log([app.desk, app.ethAddress, ethToWei(app.price)]);
     api.publishApp(app.desk, app.ethAddress, ethToWei(app.price));
     // await poke({
     //   app: 'portal-app-publisher',
