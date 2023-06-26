@@ -180,8 +180,10 @@
     ?+    msg    `this
         [%payment-request *]
       =/  hex  (crip (cass (num-to-hex:ethereum (mod eny.bowl (pow 4 16)))))
-      ::  crash if not for sale
-      =/  [=eth-price =receiving-address]  (~(got by desks-for-sale) desk.msg)
+      ?~  sale=(~(get by desks-for-sale) desk.msg)
+        ~&  >>  "desk not for sale"
+        `this
+      =,  u.sale  :: exposes eth-price and receiving-address
       =/  perms  .^([r=dict:clay w=dict:clay] %cp /(scot %p our.bowl)/[desk.msg]/(scot %da now.bowl))
       ?~  crew=(~(get by q.who.rul.r.perms) (group-from-desk desk.msg))
         ~&  >>  "perms in clay not correct"
@@ -200,9 +202,20 @@
       ==  ==
       ::
         [%payment-tx-hash *]
-      ~&  >  "received hash"
       :_  this
-      [%pass /get-tx %arvo %k %fard dap.bowl %get-tx-by-hash %noun !>([rpc-endpoint tx-hash.msg])]~
+      ~&  >  "received hash"
+      =/  processed  ^-  ^processed-payments  %+  skim  
+          processed-payments
+        |=  [=buyer =desk tx-hash=@t =time]
+        ?&  =(buyer src.bowl)
+            =(tx-hash tx-hash.msg)
+        ==
+      ?~  processed 
+        [%pass /get-tx %arvo %k %fard dap.bowl %get-tx-by-hash %noun !>([rpc-endpoint tx-hash.msg])]~
+      =+  desk:(snag 0 `^processed-payments`processed)
+      :~  :*  %pass  /payment-confirm  %agent  [src.bowl %portal-manager]  %poke  
+              %portal-message  !>([%payment-confirmed tx-hash.msg -])
+      ==  ==
     ==
     ::
       %sss-to-pub
@@ -272,10 +285,6 @@
 ++  on-arvo
   |=  [=wire sign=sign-arvo]
   ^-  (quip card:agent:gall _this)
-  :: ?.  ?=([%get-tx ~] wire)
-  ::   ~&  >  another wire
-  ::   ~&  >  sign
-  ::   `this
   ?>  ?=([%get-tx ~] wire)
   ?>  ?=([%khan %arow *] sign)
   ?.  ?=(%.y -.p.sign)
@@ -286,21 +295,20 @@
     ~&  >>  "transaction wasn't made over last 24 hr"
     `this
   =/  hex                (crip (cass (trip input.result)))
-  =/  receiving-address  (crip (cass (trip (need to.result))))
-  =/  eth-price          (crip (cass (trip (need value.result))))
+  =/  receiving-address  (crip (cass (trip (fall to.result ''))))
+  =/  eth-paid           (crip (cass (trip (need value.result))))  ::  is this always hex???
   ?~  processing-data=(~(get by processing-payments) hex)
-    ~&  >>  "payment with this hex not in processing payments"
+    ~&  >>  "payment with this hex ({<hex>}) not in processing payments"
     `this
-  ?.  =((fall to.result '') receiving-address.u.processing-data)  ::  is it possible to have to.result empty?
-    ~&  (fall to.result '')
-    ~&  receiving-address.u.processing-data
-    ~&  >>  "incorrect receiving address"
+  ?:  !=(receiving-address receiving-address.u.processing-data)
+    ~&  >>  "tx receiving address: {<(fall to.result '')>}"
+    ~&  >>  "our receiving address: {<receiving-address.u.processing-data>}"
     `this
-  ::  TODO fix this when eth-price is a string?
-  :: ?.  (gte eth-price eth-price.u.processing-data) :: is it possible to have value.result empty?
-  ::   ~&  >>  "payment too smol"
-  ::    ::should I remove hex from processing payments here?
-  ::   `this
+  ?:  !(paid-enough eth-paid eth-price.u.processing-data)
+    ~&  >>  "paid: {<eth-paid>}"
+    ~&  >>  "price: {<eth-price.u.processing-data>}"
+    ~&  >>  "payment too smol"
+    `this
   ~&  >  "success!"
   =.  processing-payments  (~(del by processing-payments) hex)
   =.  processed-payments  %+  snoc  processed-payments
