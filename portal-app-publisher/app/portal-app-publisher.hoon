@@ -272,10 +272,11 @@
 ++  on-arvo
   |=  [=wire sign=sign-arvo]
   ^-  (quip card:agent:gall _this)
-  ?.  ?=([%get-tx ~] wire)
-    ~&  >  another wire
-    ~&  >  sign
-    `this
+  :: ?.  ?=([%get-tx ~] wire)
+  ::   ~&  >  another wire
+  ::   ~&  >  sign
+  ::   `this
+  ?>  ?=([%get-tx ~] wire)
   ?>  ?=([%khan %arow *] sign)
   ?.  ?=(%.y -.p.sign)
     ~&  >>  "fetching data failed"
