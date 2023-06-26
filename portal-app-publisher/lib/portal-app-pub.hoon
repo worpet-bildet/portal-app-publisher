@@ -12,20 +12,20 @@
   :~  'blockHash'^_~  :: TODO: fails if maybe-num?
       'blockNumber'^maybe-num:rpc:ethereum
       'transactionIndex'^maybe-num:rpc:ethereum
-      from+(cu hex-to-num:ethereum so)
-      to+maybe-num:rpc:ethereum
+      from+so::(cu hex-to-num:ethereum so)
+      to+so:dejs-soft:format:: maybe-num:rpc:ethereum
       input+so
-      value+maybe-num:rpc:ethereum
+      value+so:dejs-soft:format ::maybe-num:rpc:ethereum
   ==
 ::
 ++  transaction-result
   $:  block-hash=(unit @ux)
       block-number=(unit @ud)
       transaction-index=(unit @ud)
-      from=@ux
-      to=(unit @ux)
+      from=@t
+      to=(unit @t)
       input=@t
-      value=(unit @ux)
+      value=(unit @t)
   ==
 ::
 ::  some helpers
