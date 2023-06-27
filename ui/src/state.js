@@ -3,8 +3,8 @@ import { api } from './api';
 
 export const state = writable({
   installedApps: {},
-  'processing-payments': {},
-  'processed-payments': {},
+  'processing-payments': [],
+  'processed-payments': [],
   'desks-for-sale': {},
   'rpc-endpoint': '',
 });
@@ -35,6 +35,14 @@ export const refreshInstalledApps = () => {
   });
 };
 
+export const getMyPublishedDesks = () => {
+  let desks = {};
+  Object.entries(get(state)?.installedApps || {})?.forEach(([key, data]) => {
+    if (!data.ship) desks[key] = data;
+  });
+  return desks;
+};
+
 export const isForSale = (desk) => {
   return get(state)?.['desks-for-sale']?.[desk];
 };
@@ -52,10 +60,11 @@ export const getApp = (desk) => {
 };
 
 export const getSalesOfDesk = (desk) => {
-  // return get(state).sales.filter((s) => s.desk === desk);
+  return get(state)?.['processed-payments']?.filter((s) => s.desk === desk);
 };
 
 export const handleSubscriptionEvent = (event, type) => {
+  console.log({ event, type });
   state.update((s) => {
     s = { ...s, ...event };
     return s;
@@ -68,6 +77,7 @@ export const refreshAll = () => {
   api.getProcessingPayments().then(merge);
   api.getProcessedPayments().then(merge);
   api.getDesksForSale().then(merge);
+  api.getRpcEndpoint().then(merge);
 };
 refreshAll();
 

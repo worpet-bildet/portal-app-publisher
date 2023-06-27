@@ -16,7 +16,7 @@
 
 <main>
   <Navbar />
-  <div class="p-10 pt-0">
+  <div class="p-10">
     <Router {routes} />
   </div>
 </main>

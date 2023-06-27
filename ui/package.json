@@ -21,6 +21,8 @@
     "@urbit/http-api": "^2.3.0",
     "@urbit/vite-plugin-urbit": "^1.0.0",
     "bignumber.js": "^9.1.1",
-    "svelte-spa-router": "^3.3.0"
+    "ethers": "^6.6.1",
+    "svelte-spa-router": "^3.3.0",
+    "timeago.js": "^4.0.2"
   }
 }

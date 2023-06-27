@@ -7,3 +7,7 @@ export const isValidEthAddress = (ethAddress) => {
 export const ethToWei = (eth) => {
   return new BigNumber(eth).multipliedBy(new BigNumber(10).pow(18)).toString();
 };
+
+export const weiToEth = (wei) => {
+  return new BigNumber(wei).dividedBy(new BigNumber(10).pow(18)).toString();
+};

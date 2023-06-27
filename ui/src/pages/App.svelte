@@ -1,8 +1,11 @@
 <script>
+  import { push } from 'svelte-spa-router';
   import { sigil, stringRenderer } from '@tlon/sigil-js';
+  import { format } from 'timeago.js';
   import { api } from '@root/api';
   import { state, getApp, getSalesOfDesk } from '@root/state';
   import { Modal } from '@fragments';
+  import { weiToEth } from '@root/utils';
 
   export let params;
 
@@ -12,56 +15,75 @@
   const load = (desk) => {
     app = getApp(desk);
     sales = getSalesOfDesk(desk);
-    console.log({ app });
   };
 
   // Reactive stuff, make sure we load the correct desk information
   $: load(params.desk);
   state.subscribe(() => load(params.desk));
 
+  const handleUnpublish = () => {
+    api.unpublishApp(app.desk);
+    push('/');
+  };
+
   const formatTxHash = (txHash) =>
     `${txHash.slice(0, 6)}...${txHash.slice(-4)}`;
 </script>
 
-<div>
+<div class="flex flex-col gap-4">
   {#if app}
-    <div class="flex items-center gap-4 rounded-xl p-4">
-      <img class="h-24 w-24 rounded-xl object-cover" src={app.image} />
+    <div class="flex items-center gap-4 rounded-xl p-4 border rounded-xl">
+      <img class="h-24 w-24 rounded-xl object-cover border" src={app.image} />
       <div class="flex flex-col items-start">
         <div>{app.title}</div>
-        <div class="flex gap-4">
-          <div>{app['eth-price']} ETH</div>
+        <div class="flex flex-col gap-4">
+          <div>{weiToEth(app['eth-price'])} ETH</div>
+          <a
+            href={`https://etherscan.io/address/${app['receiving-address']}`}
+            class="hover:underline"
+            target="_blank"
+            >Payable to: {formatTxHash(app['receiving-address'])}</a
+          >
         </div>
       </div>
     </div>
   {/if}
-  <div class="border-b border-white w-full" />
+  <div class="border-b border-spacer w-full" />
   <div class="flex w-full justify-end p-5">
-    <button on:click={() => (unpublishModalOpen = true)}>Unpublish</button>
+    <button class="hover:underline" on:click={() => (unpublishModalOpen = true)}
+      >Unpublish</button
+    >
   </div>
-  <div class="border-b border-white w-full" />
+  <div class="border-b border-spacer w-full" />
+  {#if !sales}
+    <div class="text-left py-5">
+      Nobody has purchased {app.title} yet. Any sales will appear here.
+    </div>
+  {/if}
   {#if sales}
-    <div class="flex flex-col items-start py-5">
-      <div class="text-3xl">Sales</div>
-      {#each sales as { buyer, txHash, timestamp }}
-        <div class="flex items-center gap-4 rounded-xl p-4">
+    <div class="flex flex-col items-start py-5 gap-4">
+      <div class="text-3xl">Sales ({sales.length})</div>
+      {#each sales as sale}
+        <a
+          href={`https://etherscan.io/tx/${sale['tx-hash']}`}
+          target="_blank"
+          class="flex items-center gap-4 rounded-xl p-4 border w-full"
+        >
           <div class="h-24 w-24 rounded-xl overflow-hidden h-full object-cover">
             {@html sigil({
-              patp: buyer,
+              patp: sale.buyer.length > '14' ? '~zod' : sale.buyer,
               renderer: stringRenderer,
               size: 50,
             })}
           </div>
           <div class="flex flex-col items-start">
-            <div>{buyer}</div>
-            <div class="flex gap-4">
-              <a href={`https://etherscan.io/tx/${txHash}`} target="_blank"
-                >{formatTxHash(txHash)}</a
-              >
+            <div>{sale.buyer}</div>
+            <div class="flex gap-4 hover:underline">
+              {formatTxHash(sale['tx-hash'])}
             </div>
-            <div>{timestamp}</div>
+            <div>{format(sale.time)}</div>
           </div>
-        </div>
+        </a>
       {/each}
     </div>
   {/if}
@@ -72,8 +94,14 @@
         If you unpublish this app from Portal, any commits to this desk will not
         be propagated to existing buyers.
       </div>
-      <div class="flex w-full justify-end">
-        <button on:click={() => api.unpublishApp(app.desk)}>Confirm</button>
+      <div class="flex w-full justify-end gap-8">
+        <button
+          class="hover:underline"
+          on:click={() => (unpublishModalOpen = false)}>Cancel</button
+        >
+        <button class="hover:underline" on:click={handleUnpublish}
+          >Unpublish</button
+        >
       </div>
     </div>
   </Modal>
