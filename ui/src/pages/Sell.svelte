@@ -19,7 +19,7 @@
 
   const publishForSale = async () => {
     await api.publishApp(app.desk, app.ethAddress, ethToWei(app.price));
-    await api.signApp(app.desk, `${app.distributor}/${app.desk}`);
+    await api.signApp(app.distributor, `${me}/${app.desk}`);
     push('/');
   };
 </script>
