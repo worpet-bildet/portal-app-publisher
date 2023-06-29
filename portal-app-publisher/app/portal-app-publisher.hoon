@@ -75,11 +75,10 @@
       =/  group-name  (group-from-desk desk.act)
       =/  eth-price  (crip (cass (trip eth-price.act)))
       =/  receiving-address  (crip (cass (trip receiving-address.act)))
-      =.  desks-for-sale  (~(put by desks-for-sale) [desk.act eth-price receiving-address])
-      =/  perms  .^([r=dict:clay w=dict:clay] %cp /(scot %p our.bowl)/[desk.act]/(scot %da now.bowl))
       ?:  =(%.n .^(? %cu /(scot %p our.bowl)/[desk.act]/(scot %da now.bowl)/desk/docket-0))
         ~&  >>  "docket doesn't exist"
         `this
+      =.  desks-for-sale  (~(put by desks-for-sale) [desk.act eth-price receiving-address])
       =/  docket  .^(docket:docket %cx (scry:io desk.act /desk/docket-0))
       =/  =treaty:treaty  ::  this bastardizes "treaty-from-docket" arm from %treaty
         =+  .^(=cass:clay %cw (scry:io desk.act /desk/docket))
@@ -91,6 +90,7 @@
         :~  [%give %fact [/updates]~ %app-pub-result !>([%desks-for-sale desks-for-sale])]
             [%give %fact [/updates]~ %app-pub-result !>([%treaties treaties])]
         ==
+      =/  perms  .^([r=dict:clay w=dict:clay] %cp /(scot %p our.bowl)/[desk.act]/(scot %da now.bowl))
                     ::(map @ta crew) 
       ?^  (~(get by q.who.rul.r.perms) group-name)
         ~
@@ -204,6 +204,7 @@
         [%payment-tx-hash *]
       :_  this
       ~&  >  "received hash"
+      ::  check if in processed payments
       =/  processed  ^-  ^processed-payments  %+  skim  
           processed-payments
         |=  [=buyer =desk tx-hash=@t =time]
@@ -211,11 +212,14 @@
             =(tx-hash tx-hash.msg)
         ==
       ?~  processed 
-        [%pass /get-tx %arvo %k %fard dap.bowl %get-tx-by-hash %noun !>([rpc-endpoint tx-hash.msg])]~
+        ::  if not in processed payments, validate transaction
+        [%pass /get-tx %arvo %k %fard dap.bowl %get-tx-by-hash %noun !>([rpc-endpoint src.bowl tx-hash.msg])]~
+      ::  if in processed payments
       =+  desk:(snag 0 `^processed-payments`processed)
-      :~  :*  %pass  /payment-confirm  %agent  [src.bowl %portal-manager]  %poke  
-              %portal-message  !>([%payment-confirmed tx-hash.msg -])
-      ==  ==
+      %+  snoc  (add-to-crew - [src our now]:bowl)
+      :*  %pass  /payment-confirm  %agent  [src.bowl %portal-manager]  %poke  
+          %portal-message  !>([%payment-confirmed tx-hash.msg -])
+      ==
     ==
     ::
       %sss-to-pub
@@ -290,7 +294,7 @@
   ?.  ?=(%.y -.p.sign)
     ~&  >>  "fetching data failed"
     `this
-  =+  !<([tx-hash=@t result=?(~ transaction-result)] q.p.p.sign)
+  =+  !<([tx-hash=@t src=@p result=?(~ transaction-result)] q.p.p.sign)
   ?~  result
     ~&  >>  "transaction wasn't made over last 24 hr"
     `this
@@ -304,6 +308,10 @@
     ~&  >>  "tx receiving address: {<(fall to.result '')>}"
     ~&  >>  "our receiving address: {<receiving-address.u.processing-data>}"
     `this
+  ?:  !=(src buyer.u.processing-data)
+    ~&  >>  "malicious actor!"
+    ~&  >>  "{<src>} asked for install, but buyer is actually {<buyer.u.processing-data>}"
+    `this
   ?:  !(paid-enough eth-paid eth-price.u.processing-data)
     ~&  >>  "paid: {<eth-paid>}"
     ~&  >>  "price: {<eth-price.u.processing-data>}"
@@ -313,16 +321,10 @@
   =.  processing-payments  (~(del by processing-payments) hex)
   =.  processed-payments  %+  snoc  processed-payments
     [buyer.u.processing-data desk.u.processing-data (crip (cass (trip tx-hash))) now.bowl]
-  =/  perms  .^([r=dict:clay w=dict:clay] %cp /(scot %p our.bowl)/[desk.u.processing-data]/(scot %da now.bowl))
-  =/  group-name  (group-from-desk desk.u.processing-data)
   :_  this
-                     ::(map @ta crew) 
-  ?~  crew=(~(get by q.who.rul.r.perms) group-name)
-    ~&  >>>  "this group should exist"
-    ~
-      ::  giving read perms to buyer
-  :~  [%pass /set-group %arvo %c %cred group-name (~(put in u.crew) buyer.u.processing-data)] 
-      :*  %pass  /payment-confirm  %agent  [buyer.u.processing-data %portal-manager]  %poke  
+  %+  welp  ::  giving read perms to buyer
+    (add-to-crew desk.u.processing-data buyer.u.processing-data our.bowl now.bowl)
+  :~  :*  %pass  /payment-confirm  %agent  [buyer.u.processing-data %portal-manager]  %poke  
           %portal-message  !>([%payment-confirmed tx-hash desk.u.processing-data])
       ==
       :*  %give  %fact  [/updates]~  %app-pub-result  !>

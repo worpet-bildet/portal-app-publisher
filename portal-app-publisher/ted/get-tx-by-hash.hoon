@@ -4,7 +4,7 @@
 ^-  thread:spider
 |^
 |=  args=vase
-=+  !<([url=@ta tx-hash=@t] args)
+=+  !<([url=@ta src=@p tx-hash=@t] args)
 =/  m  (strand ,vase)
 ^-  form:m
 ::   time based fetching, try again after x time if you don't get data
@@ -16,7 +16,7 @@
 =/  tracker  [time=~s5 count=0]
 |-
 ?:  =(tracker [~s0 0])
-  (pure:m !>([tx-hash ~]))
+  (pure:m !>([tx-hash src ~]))
 ;<  jon=json  bind:m
   %+  request-rpc:ethio  url
   :*  `'tx by hash'
@@ -25,7 +25,7 @@
   ==
 ?^  jon
   %-  pure:m 
-  !>  [tx-hash (parse-transaction-result jon)]
+  !>  [tx-hash src (parse-transaction-result jon)]
 ;<  ~  bind:m  (sleep time.tracker)
 %=  $
     tracker

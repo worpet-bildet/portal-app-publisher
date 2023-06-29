@@ -54,4 +54,23 @@
   `@ud`(hex-to-num:ethereum paid)
   `@ud`(scan (trip price) dem)
 ::
+++  add-to-crew
+  |=  [=desk =ship our=ship now=time]
+  ^-  (list card:agent:gall)
+  =/  perms  .^([r=dict:clay w=dict:clay] %cp /(scot %p our)/[desk]/(scot %da now))
+  =/  group-name  (group-from-desk desk)
+  ?^  crew=(~(get by q.who.rul.r.perms) group-name)
+    [%pass /set-group %arvo %c %cred group-name (~(put in u.crew) ship)]~
+  ::
+  ::  clay overwrites everything, so I have to take all the existing perms
+  ::  before adding a perm
+  =/  ship-perms  `(set (each @p @ta))`(~(run in p.who.rul.r.perms) |=(ship=@p [%.y ship]))
+  =/  cruz-perms  `(set (each @p @ta))`(~(run in ~(key by q.who.rul.r.perms)) |=(crew-name=@ta [%.n crew-name]))
+  =/  existing-perms  `(set (each @p @ta))`(~(uni in ship-perms) cruz-perms)
+  =+  (~(put in existing-perms) [%.n `@ta`group-name])
+  :~  :*  %pass  /create-group  %arvo  %c
+          [%perm desk *path [%r `[%white -]]]
+      ==
+      [%pass /set-group %arvo %c %cred group-name (sy ~[our ship])]
+  ==
 --
