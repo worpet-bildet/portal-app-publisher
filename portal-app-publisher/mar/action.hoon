@@ -1,4 +1,5 @@
 /-  *action
+/+  app-pub-js
 |_  act=action
 ++  grow
   |%
@@ -7,6 +8,7 @@
 ++  grab
   |%
   ++  noun  action
+  ++  json  dejs-action:dejs:app-pub-js  
   --
 ++  grad  %noun
 --
