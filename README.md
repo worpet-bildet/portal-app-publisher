@@ -28,7 +28,7 @@ Note: this is fully general. ~sampel planet is any ship which you use %portal wi
 
 ~dister-sampel-palnet publishes %app1. To make ~sampel-palnet show %app1 on their %portal page:
 - in ~sampel-palnet's terminal type:  `:portal-manager &portal-action [%authorize-ships (sy ~[~sampel-palnet ~dister-sampel-palnet])]`
-- in ~dister-sampel-palnet's terminal type: `:portal-app-publisher &action [%sign-app ~sampel-palnet '~dister-sampel-palnet/app1'`
+- in ~dister-sampel-palnet's terminal type: `:portal-app-publisher &action [%sign-app ~sampel-palnet '~dister-sampel-palnet/app1']`
 
 %app1 should now be displayed on ~sampel-palnet's %portal page.
 
