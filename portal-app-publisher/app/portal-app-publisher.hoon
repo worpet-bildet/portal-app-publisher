@@ -93,9 +93,6 @@
       =/  perms  .^([r=dict:clay w=dict:clay] %cp /(scot %p our.bowl)/[desk.act]/(scot %da now.bowl))
                     ::(map @ta crew) 
       ?^  (~(get by q.who.rul.r.perms) group-name)
-        ~&  >  "TUsAM"
-      :: PERMS IN CLAY NOT CORRECT
-      :: OVDJE?
         ~
       ::  clay overwrites everything, so I have to take all the existing perms
       ::  before adding a perm
@@ -292,7 +289,8 @@
 ++  on-arvo
   |=  [=wire sign=sign-arvo]
   ^-  (quip card:agent:gall _this)
-  ?>  ?=([%get-tx ~] wire)
+  ?:  !?=([%get-tx ~] wire)
+    `this
   ?>  ?=([%khan %arow *] sign)
   ?.  ?=(%.y -.p.sign)
     ~&  >>  "fetching data failed"
