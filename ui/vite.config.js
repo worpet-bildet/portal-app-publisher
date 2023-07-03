@@ -9,7 +9,7 @@ export default ({ mode }) => {
   const target =
     mode === 'production' ? '' : process.env.SHIP_URL ?? 'http://localhost:80';
   console.log({ target });
-  defineConfig({
+  return defineConfig({
     plugins: [svelte(), urbitPlugin({ base: 'portal-app-publisher', target })],
     resolve: {
       alias: {
