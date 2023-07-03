@@ -93,6 +93,9 @@
       =/  perms  .^([r=dict:clay w=dict:clay] %cp /(scot %p our.bowl)/[desk.act]/(scot %da now.bowl))
                     ::(map @ta crew) 
       ?^  (~(get by q.who.rul.r.perms) group-name)
+        ~&  >  "TUsAM"
+      :: PERMS IN CLAY NOT CORRECT
+      :: OVDJE?
         ~
       ::  clay overwrites everything, so I have to take all the existing perms
       ::  before adding a perm
@@ -181,12 +184,12 @@
         [%payment-request *]
       =/  hex  (crip (cass (num-to-hex:ethereum (mod eny.bowl (pow 4 16)))))
       ?~  sale=(~(get by desks-for-sale) desk.msg)
-        ~&  >>  "desk not for sale"
+        ~&  >>  "{<desk.msg>} desk not for sale"
         `this
       =,  u.sale  :: exposes eth-price and receiving-address
       =/  perms  .^([r=dict:clay w=dict:clay] %cp /(scot %p our.bowl)/[desk.msg]/(scot %da now.bowl))
       ?~  crew=(~(get by q.who.rul.r.perms) (group-from-desk desk.msg))
-        ~&  >>  "perms in clay not correct"
+        ~&  >>  "perms in clay not correct for desk {<desk.msg>}"
         `this
       ?:  (~(has in u.crew) src.bowl)
         ~&  >>  "desk {<desk.msg>} already bought by {<src.bowl>}" 
