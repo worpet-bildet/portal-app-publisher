@@ -32,18 +32,20 @@
 
 <div class="flex flex-col gap-4">
   {#if app}
-    <div class="flex items-center gap-4 rounded-xl p-4 border rounded-xl">
-      <img class="h-24 w-24 rounded-xl object-cover border" src={app.image} />
-      <div class="flex flex-col items-start">
-        <div>{app.title}</div>
-        <div class="flex flex-col gap-4">
-          <div>{weiToEth(app['eth-price'])} ETH</div>
-          <a
-            href={`https://etherscan.io/address/${app['receiving-address']}`}
-            class="hover:underline"
-            target="_blank"
-            >Payable to: {formatTxHash(app['receiving-address'])}</a
-          >
+    <div>
+      <div class="flex items-center gap-4 rounded-xl p-4 border">
+        <img class="h-24 w-24 rounded-xl object-cover border" src={app.image} />
+        <div class="flex flex-col items-start">
+          <div>{app.title}</div>
+          <div class="flex flex-col gap-4">
+            <div>{weiToEth(app['eth-price'])} ETH</div>
+            <a
+              href={`https://etherscan.io/address/${app['receiving-address']}`}
+              class="hover:underline"
+              target="_blank"
+              >Payable to: {formatTxHash(app['receiving-address'])}</a
+            >
+          </div>
         </div>
       </div>
     </div>

@@ -16,11 +16,10 @@ module.exports = {
         error: 'rgb(220 38 38)',
         spacer: '#696969',
       },
+      borderWidth: {
+        DEFAULT: '2px',
+      },
     },
-
-    // boxShadow: {
-    //   DEFAULT: '0 0 20px 0 #69696920',
-    // },
   },
   screens: {},
   variants: {

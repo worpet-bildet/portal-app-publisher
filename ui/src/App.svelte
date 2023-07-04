@@ -7,11 +7,10 @@
     '/': Home,
     '/sell': Sell,
     '/:desk': App,
-
     '/dev/api': Api,
-    // '/edit': Edit,
-    // '/sign': Sign
   };
+
+  // TODO: only bind api route in dev
 </script>
 
 <main>

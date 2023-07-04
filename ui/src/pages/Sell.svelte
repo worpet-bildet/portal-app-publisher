@@ -27,7 +27,10 @@
 {#if !deskDetails}
   <div class="w-full h-full flex flex-col gap-8">
     <div class="text-left text-2xl">
-      Select one of your published apps to sell
+      Select one of your installed apps to sell
+    </div>
+    <div class="text-left">
+      Apps only appear here if they have not been published via :treaty|publish
     </div>
     {#each Object.entries(myPublishedDesks || {}).filter(([key]) => !isForSale(key)) as [key, data]}
       <button
@@ -48,8 +51,8 @@
     {/each}
   </div>
 {:else}
-  <div class="grid grid-rows-2 gap-8 w-full">
-    <div class="flex flex-col justify-start items-start row-span-1 gap-4">
+  <div class="grid gap-8 w-full">
+    <div class="flex flex-col justify-start items-start gap-4">
       <div class="flex flex-col gap-2 items-start">
         <h3>Price (ETH)</h3>
         <input
@@ -91,7 +94,7 @@
         />
       </div>
     </div>
-    <div class="row-span-1 border rounded-xl">
+    <div class="border rounded-xl">
       {#if deskDetails}
         {@const { image, info, title, version } = deskDetails}
         <div
