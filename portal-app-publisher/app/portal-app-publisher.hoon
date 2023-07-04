@@ -213,6 +213,7 @@
         ==
       ?~  processed 
         ::  if not in processed payments, validate transaction
+        ::  dap.bowl should be %portal-app-publisher?
         [%pass /get-tx %arvo %k %fard dap.bowl %get-tx-by-hash %noun !>([rpc-endpoint src.bowl tx-hash.msg])]~
       ::  if in processed payments
       =+  desk:(snag 0 `^processed-payments`processed)
