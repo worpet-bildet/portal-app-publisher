@@ -19,6 +19,8 @@ If you would prefer to list your app for sale on another ship's Portal page (for
 :portal-manager &portal-action [%authorize-ships (sy ~[~sampel-palnet ~dister-sampel-palnet])]
 ```
 
+Where `~sampel-palnet` is your main ship and `~dister-sampel-palnet` is your app-hosting ship.
+
 2. When listing the app for sale via %portal-app-publisher on your app-hosting ship, ensure that you change the ship listed there to your main ship
 
 This does obviously require you to install `%portal-app-publisher` on the moon.
