@@ -9,6 +9,8 @@ Portal App Publisher has two main functions:
 
 ## Publishing Paid Apps on Portal
 
+Firstly, you need an Ethereum mainnet RPC endpoint. [Infura](https://www.infura.io/) has a very generous free tier.
+
 If you have installed Portal on the same ship from which your app is published, open Portal App Publisher on that ship and follow the prompts to list the app for sale on your ship's Portal page.
 
 If you would prefer to list your app for sale on another ship's Portal page (for example, you host the application on a moon and do not want to install Portal on the moon), then there are two extra steps.
