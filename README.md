@@ -1,38 +1,44 @@
 # Portal App Publisher
 
-Requirements:
-~sampel-palnet has %portal installed
-~dister-sampel-palnet has %portal-app-publisher installed
+`|install ~worpet-bildet %portal-app-publisher`
 
-Note: this is fully general. ~sampel planet is any ship which you use %portal with, and ~dister-sampel-palnet is any ship which distributes your apps. (It doesn't have to be a moon, it can be a star or whatever.)
+Portal App Publisher has two main functions:
+
+1. Enabling the sale of Hoon applications for ETH via Portal
+2. Linking apps hosted by a comet to your main ship's Portal page
 
 ## Publishing Paid Apps on Portal
 
-### Portal App Publisher and Portal on the Same Ship
+If you have installed Portal on the same ship from which your app is published, open Portal App Publisher on that ship and follow the prompts to list the app for sale on your ship's Portal page.
 
-~sampel-palnet uses %portal. If ~sampel-palnet follows the user flow on %portal-app-publisher, the apps will show up for sale on ~sampel-palnet's %portal.
+If you would prefer to list your app for sale on another ship's Portal page (for example, you host the application on a moon and do not want to install Portal on the moon), then there are two extra steps.
 
-### Portal App Publisher and Portal on Different Ships
+1. In your main ship's dojo:
 
-~dister-sampel-palnet wants to use %portal-app-publisher to sell %app1 on ~sampel-palnet's %portal page. To achieve that, do the following:
-- in ~sampel-palnet's terminal type:  `:portal-manager &portal-action [%authorize-ships (sy ~[~sampel-palnet ~dister-sampel-palnet])]`
-- return to %portal-app-publisher on ~dister-sampel-palnet and finish the setup. When you are done, %app1 should show up on ~sampel-palnet's %portal page
+```
+:portal-manager &portal-action [%authorize-ships (sy ~[~sampel-palnet ~dister-sampel-palnet])]
+```
+
+2. When listing the app for sale via %portal-app-publisher on your app-hosting ship, ensure that you change the ship listed there to your main ship
+
+This does obviously require you to install `%portal-app-publisher` on the moon.
 
 ## Publishing Free Apps on Portal
 
-###  Treaty Published Apps and Portal on the Same Ship
+If you are listing an app on Portal for free, but still want to maintain a separation between the app-hosting ship and the ship you use with Portal, then you do not need to use the frontend application. You can use two terminal commands:
 
-~sampel-palnet uses %portal. All apps `treaty|publish`ed by ~sampel-palnet will show up on their %portal page.
+1. In your main ship's dojo:
 
-###  Treaty Published Apps and Portal on Different Ships
+```
+:portal-manager &portal-action [%authorize-ships (sy ~[~sampel-palnet ~dister-sampel-palnet])]
+```
 
-~dister-sampel-palnet publishes %app1. To make ~sampel-palnet show %app1 on their %portal page:
-- in ~sampel-palnet's terminal type:  `:portal-manager &portal-action [%authorize-ships (sy ~[~sampel-palnet ~dister-sampel-palnet])]`
-- in ~dister-sampel-palnet's terminal type: `:portal-app-publisher &action [%sign-app ~sampel-palnet '~dister-sampel-palnet/app1']`
+Where `~sampel-palnet` is your main ship, and `~dister-sampel-palnet` is your app-hosting ship.
 
-%app1 should now be displayed on ~sampel-palnet's %portal page.
+2. In your app-hosting ship's dojo:
 
+```
+:portal-app-publisher &action [%sign-app ~sampel-palnet '~dister-sampel-palnet/app1']
+```
 
-
-
-
+Where `%app1` is the name of the desk. The app should now be displayed on `~sampel-palnet`'s %portal page.
