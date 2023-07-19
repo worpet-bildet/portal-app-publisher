@@ -2,6 +2,8 @@
 
 `|install ~worpet-bildet %portal-app-publisher`
 
+[Video Demo](https://www.youtube.com/watch?v=9q71hV65QPM)
+
 Portal App Publisher has two main functions:
 
 1. Enabling the sale of Hoon applications for ETH via Portal
