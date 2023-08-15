@@ -247,6 +247,10 @@
   |=  [=wire =sign:agent:gall]
   ^-  (quip card _this)
   ?+    wire    (on-agent:default wire sign)
+      [~ %sss %scry-response @ @ @ %portal-devs ~]
+    =^  cards  pub-portal-devs  (tell:du-portal-devs |3:wire sign)
+    [cards this]
+    ::
       [%our-apps ~]
     ::  this takes just apps ids
     ?+    -.sign    (on-agent:default wire sign)
