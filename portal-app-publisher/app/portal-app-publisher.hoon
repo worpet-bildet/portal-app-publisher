@@ -91,19 +91,23 @@
             [%give %fact [/updates]~ %app-pub-result !>([%treaties treaties])]
         ==
       =/  perms  .^([r=dict:clay w=dict:clay] %cp /(scot %p our.bowl)/[desk.act]/(scot %da now.bowl))
-                    ::(map @ta crew) 
+                    ::(map @ta crew)
       ?^  (~(get by q.who.rul.r.perms) group-name)
+        ~&  >  "if group/crew exists, does nothing"
         ~
+      ~&  >  "if group doesnt exist, creates it and gives perms"
       ::  clay overwrites everything, so I have to take all the existing perms
       ::  before adding a perm
       =/  ship-perms  `(set (each @p @ta))`(~(run in p.who.rul.r.perms) |=(ship=@p [%.y ship]))
       =/  cruz-perms  `(set (each @p @ta))`(~(run in ~(key by q.who.rul.r.perms)) |=(crew-name=@ta [%.n crew-name]))
       =/  existing-perms  `(set (each @p @ta))`(~(uni in ship-perms) cruz-perms)
       =+  (~(put in existing-perms) [%.n `@ta`group-name])
-      :~  :*  %pass  /create-group  %arvo  %c
+      ::  ordering is important
+      ::  I guess the cards are taken in a reverse order by Arvo
+      :~  [%pass /set-group %arvo %c %cred group-name (sy ~[our.bowl])]
+          :*  %pass  /create-group  %arvo  %c
               [%perm desk.act *path [%r `[%white -]]]
           ==
-          [%pass /set-group %arvo %c %cred group-name (sy ~[our.bowl])]
       ==
       ::
       ::  be careful when unpublishing, as buyers will lose access to desk
@@ -121,10 +125,7 @@
       :_  this
       %+  welp 
         [%give %fact [/updates]~ %app-pub-result !>([%desks-for-sale desks-for-sale])]~
-                    ::(map @ta crew) 
-      ?~  crew=(~(get by q.who.rul.r.perms) group-name)
-        ~&  "desk not in perms anyways"
-        ~
+      ~&  >>  "unpublish: revoke perms"
       [%pass /set-group %arvo %c %cred group-name *(set ship)]~
       ::
         [%sign-app *]
