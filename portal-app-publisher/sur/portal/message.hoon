@@ -5,6 +5,8 @@
   $%  ::  make sure to keep the previous funcitonality, while adding price and paymen
       [%sign-app dist-desk=@t sig=signature =treaty:treaty eth-price=(unit @t)]
       ::
+      [%unpublish =desk]
+      ::
       ::  seller receives
       [%payment-request =desk]
       ::  seller sends
