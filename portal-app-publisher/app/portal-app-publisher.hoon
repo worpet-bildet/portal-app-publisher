@@ -6,6 +6,18 @@
 +$  versioned-state
   $%  state-0
       state-1
+      state-2
+  ==
++$  state-2
+  $:  %2
+      =authorized-ships  :: remembers which ships are allowed to represent which apps, in portal
+      =processing-payments
+      =processed-payments
+      =desks-for-sale
+      rpc-endpoint=@ta
+      our-apps=(set [ship desk])  ::treaty published apps
+      treaties=(map [ship desk] treaty:treaty)  ::  treaties of both treaty published and PAP published
+      pub-portal-devs=_(mk-pubs portal-devs ,[%portal-devs ~])
   ==
 +$  state-1
   $:  %1
@@ -26,9 +38,10 @@
 +$  card  card:agent:gall
 --
 %-  agent:dbug
-=|  state-1
+=|  state-2
 =*  state  -
 ^-  agent:gall
+=<
 |_  =bowl:gall
 +*  this  `agent:gall`.
     default   ~(. (default-agent `agent:gall`this %.n) bowl)
@@ -46,8 +59,12 @@
   =/  old  !<(versioned-state vase)
   =.  state
     ?-  old
-      [%0 *]  [%1 *^processing-payments *^processed-payments *^desks-for-sale '' +.old]
-      [%1 *]  old
+        [%0 *]  
+      ^-  state-2
+      [%2 *^authorized-ships *^processing-payments *^processed-payments *^desks-for-sale '' +.old]
+      ::
+      [%1 *]  [%2 *^authorized-ships +.old]
+      [%2 *]  old
     ==
   on-init
 ++  on-poke
@@ -80,30 +97,32 @@
         `this
       =.  desks-for-sale  (~(put by desks-for-sale) [desk.act eth-price receiving-address])
       =/  docket  .^(docket:docket %cx (scry:io desk.act /desk/docket-0))
-      =/  =treaty:treaty  ::  this bastardizes "treaty-from-docket" arm from %treaty
-        =+  .^(=cass:clay %cw (scry:io desk.act /desk/docket))
-        =+  .^(hash=@uv %cz (scry:io desk.act ~))
-        [our.bowl desk.act da+da.cass hash docket]
+      =/  =treaty:treaty  (treaty-from-docket desk.act docket)
       =.  treaties  (~(put by treaties) [our.bowl desk.act] treaty)
-      :_  this
+    :_  this
       %+  welp 
         :~  [%give %fact [/updates]~ %app-pub-result !>([%desks-for-sale desks-for-sale])]
             [%give %fact [/updates]~ %app-pub-result !>([%treaties treaties])]
+            [%pass /docket-next/[desk.act] %arvo %c %warp our.bowl desk.act ~ %next %x da+now.bowl /desk/docket-0]
         ==
       =/  perms  .^([r=dict:clay w=dict:clay] %cp /(scot %p our.bowl)/[desk.act]/(scot %da now.bowl))
-                    ::(map @ta crew) 
+                    ::(map @ta crew)
       ?^  (~(get by q.who.rul.r.perms) group-name)
+        ~&  >  "if group/crew exists, does nothing"
         ~
+      ~&  >  "if group doesnt exist, creates it and gives perms"
       ::  clay overwrites everything, so I have to take all the existing perms
       ::  before adding a perm
       =/  ship-perms  `(set (each @p @ta))`(~(run in p.who.rul.r.perms) |=(ship=@p [%.y ship]))
       =/  cruz-perms  `(set (each @p @ta))`(~(run in ~(key by q.who.rul.r.perms)) |=(crew-name=@ta [%.n crew-name]))
       =/  existing-perms  `(set (each @p @ta))`(~(uni in ship-perms) cruz-perms)
       =+  (~(put in existing-perms) [%.n `@ta`group-name])
-      :~  :*  %pass  /create-group  %arvo  %c
+      ::  ordering is important
+      ::  I guess the cards are taken in a reverse order by Arvo
+      :~  [%pass /set-group %arvo %c %cred group-name (sy ~[our.bowl])]
+          :*  %pass  /create-group  %arvo  %c
               [%perm desk.act *path [%r `[%white -]]]
           ==
-          [%pass /set-group %arvo %c %cred group-name (sy ~[our.bowl])]
       ==
       ::
       ::  be careful when unpublishing, as buyers will lose access to desk
@@ -119,18 +138,23 @@
       =.  desks-for-sale  (~(del by desks-for-sale) desk.act)
       =/  perms  .^([r=dict:clay w=dict:clay] %cp /(scot %p our.bowl)/[desk.act]/(scot %da now.bowl))
       :_  this
-      %+  welp 
-        [%give %fact [/updates]~ %app-pub-result !>([%desks-for-sale desks-for-sale])]~
-                    ::(map @ta crew) 
-      ?~  crew=(~(get by q.who.rul.r.perms) group-name)
-        ~&  "desk not in perms anyways"
-        ~
-      [%pass /set-group %arvo %c %cred group-name *(set ship)]~
+      ;:  welp  
+          [%give %fact [/updates]~ %app-pub-result !>([%desks-for-sale desks-for-sale])]~
+          ~&  >>  "unpublish: revoke perms"
+          [%pass /set-group %arvo %c %cred group-name *(set ship)]~
+          ?~  dev=(~(get by authorized-ships) [our.bowl desk.act])
+            ~
+          :_  ~
+          :*  %pass  /sign  %agent  [u.dev %portal-manager]  %poke  
+              %portal-message  !>  [%unpublish desk.act]
+          ==
+      ==
       ::
         [%sign-app *]
       =/  dist-desk  (parse-dist-desk dist-desk.act)
       ?~  dist-desk  !!
-      ?~  treaty=(~(gut by treaties) [dist-name desk-name]:u:dist-desk ~)
+      =/  desk-flag  [dist-name desk-name]:u:dist-desk
+      ?~  treaty=(~(gut by treaties) desk-flag ~)
         ~&  >  "app is either not treaty published, or it is not published with %portal-app-publisher"
         `this
       =/  eth-price=(unit @t)
@@ -138,7 +162,9 @@
           ~
         (some eth-price:v)
       =^  cards-1  pub-portal-devs
-        (give:du-portal-devs [%portal-devs ~] [%put [dist-name desk-name]:u:dist-desk dev.act])
+        (give:du-portal-devs [%portal-devs ~] [%put desk-flag dev.act])
+      =.  authorized-ships
+        (~(put by authorized-ships) desk-flag dev.act)
       :_  this
       %+  welp  cards-1
       :~  :*  %give  %fact  [/updates]~  %app-pub-result  !>
@@ -211,10 +237,9 @@
         ?&  =(buyer src.bowl)
             =(tx-hash tx-hash.msg)
         ==
-      ?~  processed 
+      ?~  processed
         ::  if not in processed payments, validate transaction
-        ::  dap.bowl should be %portal-app-publisher?
-        [%pass /get-tx %arvo %k %fard dap.bowl %get-tx-by-hash %noun !>([rpc-endpoint src.bowl tx-hash.msg])]~
+        [%pass /get-tx %arvo %k %fard q.byk.bowl %get-tx-by-hash %noun !>([rpc-endpoint src.bowl tx-hash.msg])]~
       ::  if in processed payments
       =+  desk:(snag 0 `^processed-payments`processed)
       %+  snoc  (add-to-crew - [src our now]:bowl)
@@ -294,52 +319,93 @@
 ++  on-arvo
   |=  [=wire sign=sign-arvo]
   ^-  (quip card:agent:gall _this)
-  ?:  !?=([%get-tx ~] wire)
-    `this
-  ?>  ?=([%khan %arow *] sign)
-  ?.  ?=(%.y -.p.sign)
-    ~&  >>  "fetching data failed"
-    `this
-  =+  !<([tx-hash=@t src=@p result=?(~ transaction-result)] q.p.p.sign)
-  ?~  result
-    ~&  >>  "transaction wasn't made over last 24 hr"
-    `this
-  =/  hex                (crip (cass (trip input.result)))
-  =/  receiving-address  (crip (cass (trip (fall to.result ''))))
-  =/  eth-paid           (crip (cass (trip (need value.result))))  ::  is this always hex???
-  ?~  processing-data=(~(get by processing-payments) hex)
-    ~&  >>  "payment with this hex ({<hex>}) not in processing payments"
-    `this
-  ?:  !=(receiving-address receiving-address.u.processing-data)
-    ~&  >>  "tx receiving address: {<(fall to.result '')>}"
-    ~&  >>  "our receiving address: {<receiving-address.u.processing-data>}"
-    `this
-  ?:  !=(src buyer.u.processing-data)
-    ~&  >>  "malicious actor!"
-    ~&  >>  "{<src>} asked for install, but buyer is actually {<buyer.u.processing-data>}"
-    `this
-  ?:  !(paid-enough eth-paid eth-price.u.processing-data)
-    ~&  >>  "paid: {<eth-paid>}"
-    ~&  >>  "price: {<eth-price.u.processing-data>}"
-    ~&  >>  "payment too smol"
-    `this
-  ~&  >  "success!"
-  =.  processing-payments  (~(del by processing-payments) hex)
-  =.  processed-payments  %+  snoc  processed-payments
-    [buyer.u.processing-data desk.u.processing-data (crip (cass (trip tx-hash))) now.bowl]
-  :_  this
-  %+  welp  ::  giving read perms to buyer
-    (add-to-crew desk.u.processing-data buyer.u.processing-data our.bowl now.bowl)
-  :~  :*  %pass  /payment-confirm  %agent  [buyer.u.processing-data %portal-manager]  %poke  
-          %portal-message  !>([%payment-confirmed tx-hash desk.u.processing-data])
-      ==
-      :*  %give  %fact  [/updates]~  %app-pub-result  !>
-          [%processing-payments processing-payments]  
-      ==
-      :*  %give  %fact  [/updates]~  %app-pub-result  !>
-          [%processed-payments processed-payments]  
-      ==
+  ?+    wire    `this
+      [%docket-next @ ~]
+    ?>  ?=([?(%clay %behn) %writ *] sign)
+    =/  desk  i.t.wire
+    ?.  (~(has by treaties) [our.bowl desk])
+      `this
+    ?~  p.sign  ::  docket file is gone
+      ~&  >>>  "{(scow %t desk)} docket file was deleted"
+      =.  treaties  (~(del by treaties) [our.bowl desk])
+      `this
+    =/  cage  r.u.p.sign
+    ?.  =(%docket-0 p.cage)
+      `this
+    =+  !<(=docket:docket q.cage)
+    =/  =treaty:treaty  (treaty-from-docket desk docket)
+    =.  treaties  (~(put by treaties) [our.bowl desk] treaty)
+    :_  this
+    %+  welp
+      [%pass /docket-next/[desk] %arvo %c %warp our.bowl desk ~ %next %x da+now.bowl /desk/docket-0]^~
+    ?~  dev=(~(get by authorized-ships) [our.bowl desk])
+      ~
+    =/  dist-desk  (crip ;:(welp (scow %p our.bowl) "/" (trip desk)))
+    :_  ~
+    :*  %pass  /sign  %agent  [u.dev %portal-manager]  %poke  
+        %portal-message  !>
+        :*  %sign-app
+            dist-desk
+            (^sign our.bowl now.bowl [%sign-app u.dev dist-desk])
+            treaty
+            `eth-price:(~(got by desks-for-sale) desk)
+    ==  ==
+    ::
+      [%get-tx ~]
+    ?>  ?=([%khan %arow *] sign)
+    ?.  ?=(%.y -.p.sign)
+      ~&  >>  "fetching data failed"
+      `this
+    =+  !<([tx-hash=@t src=@p result=?(~ transaction-result)] q.p.p.sign)
+    ?~  result
+      ~&  >>  "transaction wasn't made over last 24 hr"
+      `this
+    =/  hex                (crip (cass (trip input.result)))
+    =/  receiving-address  (crip (cass (trip (fall to.result ''))))
+    =/  eth-paid           (crip (cass (trip (need value.result))))  ::  is this always hex???
+    ?~  processing-data=(~(get by processing-payments) hex)
+      ~&  >>  "payment with this hex ({<hex>}) not in processing payments"
+      `this
+    ?:  !=(receiving-address receiving-address.u.processing-data)
+      ~&  >>  "tx receiving address: {<(fall to.result '')>}"
+      ~&  >>  "our receiving address: {<receiving-address.u.processing-data>}"
+      `this
+    ?:  !=(src buyer.u.processing-data)
+      ~&  >>  "malicious actor!"
+      ~&  >>  "{<src>} asked for install, but buyer is actually {<buyer.u.processing-data>}"
+      `this
+    ?:  !(paid-enough eth-paid eth-price.u.processing-data)
+      ~&  >>  "paid: {<eth-paid>}"
+      ~&  >>  "price: {<eth-price.u.processing-data>}"
+      ~&  >>  "payment too smol"
+      `this
+    ~&  >  "success!"
+    =.  processing-payments  (~(del by processing-payments) hex)
+    =.  processed-payments  %+  snoc  processed-payments
+      [buyer.u.processing-data desk.u.processing-data (crip (cass (trip tx-hash))) now.bowl]
+    :_  this
+    %+  welp  ::  giving read perms to buyer
+      (add-to-crew desk.u.processing-data buyer.u.processing-data our.bowl now.bowl)
+    :~  :*  %pass  /payment-confirm  %agent  [buyer.u.processing-data %portal-manager]  %poke  
+            %portal-message  !>([%payment-confirmed tx-hash desk.u.processing-data])
+        ==
+        :*  %give  %fact  [/updates]~  %app-pub-result  !>
+            [%processing-payments processing-payments]  
+        ==
+        :*  %give  %fact  [/updates]~  %app-pub-result  !>
+            [%processed-payments processed-payments]  
+        ==
+    ==
   ==
 ::
 ++  on-fail   on-fail:default
+--
+|_  =bowl:gall
++*  this  .
+    io        ~(. agentio bowl)
+++  treaty-from-docket
+  |=  [=desk =docket:docket]
+  =+  .^(=cass:clay %cw (scry:io desk /desk/docket))
+  =+  .^(hash=@uv %cz (scry:io desk ~))
+  [our.bowl desk da+da.cass hash docket]
 --
