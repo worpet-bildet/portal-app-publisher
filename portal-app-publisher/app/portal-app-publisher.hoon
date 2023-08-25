@@ -212,10 +212,9 @@
         ?&  =(buyer src.bowl)
             =(tx-hash tx-hash.msg)
         ==
-      ?~  processed 
+      ?~  processed
         ::  if not in processed payments, validate transaction
-        ::  dap.bowl should be %portal-app-publisher?
-        [%pass /get-tx %arvo %k %fard dap.bowl %get-tx-by-hash %noun !>([rpc-endpoint src.bowl tx-hash.msg])]~
+        [%pass /get-tx %arvo %k %fard q.byk.bowl %get-tx-by-hash %noun !>([rpc-endpoint src.bowl tx-hash.msg])]~
       ::  if in processed payments
       =+  desk:(snag 0 `^processed-payments`processed)
       %+  snoc  (add-to-crew - [src our now]:bowl)
