@@ -231,20 +231,21 @@
       :_  this
       ~&  >  "received hash"
       ::  check if in processed payments
+      =/  tx-hash-msg  (crip (cass (trip tx-hash.msg)))
       =/  processed  ^-  ^processed-payments  %+  skim  
           processed-payments
         |=  [=buyer =desk tx-hash=@t =time]
         ?&  =(buyer src.bowl)
-            =(tx-hash tx-hash.msg)
+            =(tx-hash tx-hash-msg)
         ==
       ?~  processed
         ::  if not in processed payments, validate transaction
-        [%pass /get-tx %arvo %k %fard q.byk.bowl %get-tx-by-hash %noun !>([rpc-endpoint src.bowl tx-hash.msg])]~
+        [%pass /get-tx %arvo %k %fard q.byk.bowl %get-tx-by-hash %noun !>([rpc-endpoint src.bowl tx-hash-msg])]~
       ::  if in processed payments
       =+  desk:(snag 0 `^processed-payments`processed)
       %+  snoc  (add-to-crew - [src our now]:bowl)
       :*  %pass  /payment-confirm  %agent  [src.bowl %portal-manager]  %poke  
-          %portal-message  !>([%payment-confirmed tx-hash.msg -])
+          %portal-message  !>([%payment-confirmed tx-hash-msg -])
       ==
     ==
     ::
