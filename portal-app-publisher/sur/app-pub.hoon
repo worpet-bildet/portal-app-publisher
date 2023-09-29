@@ -1,5 +1,7 @@
 /-  treaty
 |%
++$  authorized-ships  (map [ship desk] ship)
+::
 :: if you hit entropy collision, you will be rewarded 1000 portal score
 +$  processing-payments  (map hex [=buyer =desk =eth-price =receiving-address])
 +$  processed-payments  (list [=buyer =desk tx-hash=@t =time])
